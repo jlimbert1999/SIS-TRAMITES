@@ -1,0 +1,27 @@
+.selector-tramite {
+    font-size: 14px;
+    width: 100%;
+}
+
+.example-tab-icon {
+    margin-right: 8px;
+}
+
+.mat-form-field {
+    font-size: 14px;
+    width: 100%;
+}
+
+.example-spacer {
+    flex: 1 1 auto;
+}
+
+mat-icon {
+    vertical-align: middle;
+}
+
+.uppercase {
+    text-transform: uppercase;
+}
+
+

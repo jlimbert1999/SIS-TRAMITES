@@ -1,0 +1,98 @@
+.example-spacer {
+    flex: 1 1 auto;
+}
+
+
+mat-icon {
+    vertical-align: middle;
+}
+
+
+.mail_recibido .mat-cell {
+    background-color: #FE5F55;
+    color: white;
+}
+
+.mail_recibido a {
+    color: black;
+}
+
+
+/* CELDA USUARIO TABLA */
+.content {
+    display: flex;
+}
+
+.content img {
+    margin-right: 10px;
+    display: block;
+    height: 30px;
+    width: 30px;
+    margin-top: 5px;
+}
+
+.content h4,
+.content p {
+    margin: 0;
+}
+
+
+table {
+    width: 100%;
+}
+
+tr.example-detail-row {
+    height: 0;
+}
+
+tr.example-element-row:not(.example-expanded-row):hover {
+    background: whitesmoke;
+}
+
+tr.example-element-row:not(.example-expanded-row):active {
+    background: #efefef;
+}
+
+.example-element-row td {
+    border-bottom-width: 0;
+}
+
+.example-element-detail {
+    overflow: hidden;
+    display: flex;
+}
+
+.example-element-diagram {
+    min-width: 80px;
+    border: 2px solid black;
+    padding: 8px;
+    font-weight: lighter;
+    margin: 8px 0;
+    height: 104px;
+}
+
+.example-element-symbol {
+    font-weight: bold;
+    font-size: 40px;
+    line-height: normal;
+}
+
+.example-element-description {
+    padding: 16px;
+}
+
+.example-element-description-attribution {
+    opacity: 0.5;
+}
+
+
+.example-header-image {
+    background-image: url('../../../assets/img/user.png');
+    background-size: cover;
+}
+
+
+.example-toolbar {
+    background-color: #4D908E;
+    color: white;
+}

@@ -1,0 +1,7 @@
+.colDetalles {
+    /* position: absolute; */
+    top: 0px;
+    bottom: 0;
+    height: 300px;
+    overflow-y: scroll;
+}

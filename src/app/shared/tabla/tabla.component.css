@@ -1,0 +1,14 @@
+table {
+    width: 100%;
+}
+
+.mat-column-opciones {
+    width: 90px;
+    border-left: 1px solid currentColor;
+    padding-left: 15px;
+    text-align: center;
+}
+.mat-column-activo {
+    width: 120px;
+    text-align: center;
+}

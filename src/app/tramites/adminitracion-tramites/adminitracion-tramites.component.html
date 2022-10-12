@@ -1,0 +1,126 @@
+<p>
+    <mat-toolbar class="example-toolbar">
+        <ng-container *ngIf="!pagitationService.modo_busqueda">
+            <span>Tramites /
+                <small style="font-size: 15px;">
+                    Total: {{Total}}
+                </small>
+            </span>
+
+            <span class="example-spacer"></span>
+            <button (click)="activar_busqueda()" matTooltip="Busqueda" mat-icon-button
+                class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
+                <mat-icon>search</mat-icon>
+            </button>
+            <button mat-icon-button matTooltip="Registrar tramite" (click)="registrar_Tramite()" class="example-icon"
+                aria-label="Example icon-button with share icon">
+                <mat-icon>add</mat-icon>
+            </button>
+        </ng-container>
+
+        <mat-form-field *ngIf="pagitationService.modo_busqueda==true" floatLabel="never" style="width: 100%;">
+            <mat-label>Ingrese el DNI del solicitante o el alterno</mat-label>
+            <input #myInput matInput type="text" [(ngModel)]="pagitationService.termino_busqueda" 
+                (keyup.enter)="buscar_tramite()">
+            <button matSuffix mat-icon-button aria-label="Clear" (click)="desactivar_busqueda()">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+    </mat-toolbar>
+</p>
+<mat-progress-bar *ngIf="cargando" mode="indeterminate"></mat-progress-bar>
+<!-- <div class="container-fluid" > -->
+
+
+<mat-spinner [diameter]="150" *ngIf="cargando"></mat-spinner>
+<div [@fadeInOnEnter] class="mat-elevation-z8">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+        <ng-container matColumnDef="enviado">
+            <th mat-header-cell *matHeaderCellDef> Enviado </th>
+            <td mat-cell *matCellDef="let element">
+                {{element.enviado?'SI':"NO"}}
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="alterno">
+            <th mat-header-cell *matHeaderCellDef> Alterno </th>
+            <td mat-cell *matCellDef="let element">
+                <a [routerLink]="['ficha',element.id_tramite ]">
+                    {{element.alterno}}
+                </a>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="titulo">
+            <th mat-header-cell *matHeaderCellDef> Tramite </th>
+            <td mat-cell *matCellDef="let element"> {{element.titulo}}</td>
+        </ng-container>
+
+
+        <ng-container matColumnDef="solicitante">
+            <th mat-header-cell *matHeaderCellDef> Solicitante</th>
+            <td mat-cell *matCellDef="let element">{{element.solicitante|titlecase}} </td>
+        </ng-container>
+        <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef> estado </th>
+            <td mat-cell *matCellDef="let element">
+                <span class="badge" [ngClass]="[
+                    element.estado=='Inscrito'?'text-bg-primary':'',
+                    element.estado=='En revision'?'text-bg-secondary':'',
+                    element.estado=='Observado'?'text-bg-warning':'',
+                    element.estado=='Concluido'?'text-bg-dark':'',
+                    ]">
+                    {{element.estado}}
+                </span>
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="fecha_creacion">
+            <th mat-header-cell *matHeaderCellDef> Registro</th>
+            <td mat-cell *matCellDef="let element">{{element.fecha_creacion|date:'short'}}</td>
+        </ng-container>
+        <ng-container matColumnDef="opciones">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let element">
+                <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+                    <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                    <button (click)="editar_tramite(element)" *ngIf="!element.enviado" mat-menu-item>
+                        <mat-icon>edit</mat-icon>
+                        <span>Editar tramite</span>
+                    </button>
+                    <button (click)="abrir_DialogRemision(element)" *ngIf="!element.enviado" mat-menu-item>
+                        <mat-icon>send</mat-icon>
+                        <span>Remitir tramite</span>
+                    </button>
+                    <button (click)="imprimir_ficha(element)" mat-menu-item>
+                        <mat-icon>print</mat-icon>
+                        <span>Generar ficha</span>
+                    </button>
+                    <button (click)="generar_hoja_ruta(element)" *ngIf="element.enviado" mat-menu-item>
+                        <mat-icon>print</mat-icon>
+                        <span>Generar ruta</span>
+                    </button>
+                </mat-menu>
+
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="4">Sin registros</td>
+        </tr>
+
+    </table>
+
+    <mat-paginator [pageIndex]="pagitationService.pageIndex" [length]="Total" (page)="cambiar_paginacion($event)" [pageSizeOptions]="[10, 25, 35]"
+        aria-label="Select page" showFirstLastButtons>
+    </mat-paginator>
+
+</div>
+
+
+<mat-spinner [diameter]="150" *ngIf="cargando"></mat-spinner>
+
+<!-- </div> -->

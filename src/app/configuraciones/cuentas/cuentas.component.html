@@ -1,0 +1,58 @@
+<mat-toolbar>
+  <span *ngIf="asignadas==1">Cuentas /
+    <small *ngIf="termino_busqueda==''" style="font-size: 16px;">
+      total: {{Total}}
+    </small>
+    <small *ngIf="termino_busqueda!=''" style="font-size: 16px;">
+      busqueda
+    </small>
+  </span>
+  <span *ngIf="asignadas==0">Cuentas sin asignar / 
+    <small *ngIf="termino_busqueda==''" style="font-size: 16px;">
+      total: {{Total}}
+    </small>
+    <small *ngIf="termino_busqueda!=''" style="font-size: 16px;">
+      busqueda
+    </small>
+  </span>
+  <span class="example-spacer"></span>
+
+
+  <button (click)="crear_cuenta()" mat-icon-button class="example-icon"
+    aria-label="Example icon-button with share icon">
+    <mat-icon>add</mat-icon>
+  </button>
+  <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+    <mat-icon>more_vert</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu">
+
+    <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group" [(ngModel)]="asignadas">
+      <mat-radio-button (click)="cambiar_tipo(1)" class="example-radio-button" [value]="1">
+        Cuentas asignadas
+      </mat-radio-button>
+      <mat-radio-button (click)="cambiar_tipo(0)" class="example-radio-button" [value]="0">
+        Cuentas sin asignar
+      </mat-radio-button>
+    </mat-radio-group>
+
+
+  </mat-menu>
+
+
+</mat-toolbar>
+
+<div style="padding-inline: 30px;">
+  <mat-form-field class="txt_busqueda" appearance="standard">
+    <input [(ngModel)]="termino_busqueda" matInput (keyup)="applyFilter($event)"
+      placeholder="Ingrese el dni del funcionario o el nombre del cargo">
+    <button *ngIf="termino_busqueda" matSuffix mat-icon-button aria-label="Clear" (click)="limpiar_busqueda()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-form-field>
+</div>
+
+
+<app-tabla (eventoPaginacion)="cambiar_paginacion($event)" [dataSource]="dataSource" [total_filas]="Total"
+  [displayedColumns]="displayedColumns" [opciones]="opciones" (llamarEditar)="editar_cuenta($event)"
+  (llamarEliminar)="eliminar_cuenta($event)" (llamarHabilitar)="habilitar_cuenta($event)" (llamarDesvincular)="desvincular_cuenta($event)"></app-tabla>

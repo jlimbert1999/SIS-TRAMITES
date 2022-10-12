@@ -1,0 +1,50 @@
+<h1 mat-dialog-title>{{titulo}} de institucion</h1>
+<div mat-dialog-content>
+    
+    <form [formGroup]="Form_Institucion">
+        <div class="row">
+            <div class="col-8">
+                <mat-form-field appearance="fill">
+                    <mat-label>Nombre</mat-label>
+                    <input formControlName="nombre" matInput class="uppercase">
+                    <mat-error *ngIf="!Form_Institucion.hasError('required')">
+                        Debe ingresar el nombre de la institucion
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            <div class="col-4">
+                <mat-form-field appearance="fill">
+                    <mat-label>Sigla</mat-label>
+                    <input formControlName="sigla" matInput class="uppercase">
+                    <mat-error>{{ errorMessage }}</mat-error> 
+                   
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-8">
+                <mat-form-field appearance="fill">
+                    <mat-label>Direccion</mat-label>
+                    <input formControlName="direccion" matInput class="uppercase">
+                    <mat-error *ngIf="!Form_Institucion.hasError('required')">
+                        Debe ingresar la direccion
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            <div class="col-4">
+                <mat-form-field appearance="fill">
+                    <mat-label>Telefono</mat-label>
+                    <input formControlName="telefono" matInput class="uppercase">
+                    <mat-error *ngIf="!Form_Institucion.hasError('required')">
+                        Debe ingresar el numero telefonico
+                    </mat-error>
+                </mat-form-field>
+            </div>
+        </div>
+      
+    </form>
+</div>
+<div mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" (click)="onNoClick()">Cancelar</button>
+    <button mat-raised-button [disabled]="Form_Institucion.invalid" color="primary" (click)="guardar()">Guardar</button>
+</div>

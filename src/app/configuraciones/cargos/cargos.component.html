@@ -1,0 +1,31 @@
+<div [@fadeInOnEnter]>
+    <mat-toolbar>
+        <span>Cargos / <small style="font-size: 16px;">total: {{Total}}</small></span>
+        <span class="example-spacer"></span>
+        <button (click)="crear_cargo()" mat-icon-button class="example-icon"
+            aria-label="Example icon-button with share icon">
+            <mat-icon>add</mat-icon>
+        </button>
+    </mat-toolbar>
+
+    <div style="padding-inline: 30px;">
+        <mat-form-field class="txt_busqueda" appearance="standard">
+            <!-- <mat-label>Filter</mat-label> -->
+            <input [(ngModel)]="termino_busqueda" matInput (keyup)="applyFilter($event)"
+                placeholder="Ingrese el nombre del cargo">
+            <button *ngIf="termino_busqueda" matSuffix mat-icon-button aria-label="Clear" (click)="limpiar_busqueda()">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+    </div>
+
+
+
+
+    <app-tabla (eventoPaginacion)="cambiar_paginacion($event)" [dataSource]="dataSource" [total_filas]="Total"
+        [displayedColumns]="displayedColumns" [opciones]="opciones" (llamarEditar)="editar_cargo($event)"
+        (llamarEliminar)="eliminar_cargo($event)" (llamarHabilitar)="habilitar_cargo($event)"></app-tabla>
+
+    <mat-spinner [diameter]="150" *ngIf="cargando"></mat-spinner>
+
+</div>

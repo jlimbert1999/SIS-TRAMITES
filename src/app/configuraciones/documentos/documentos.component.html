@@ -1,0 +1,16 @@
+<mat-toolbar>
+    <span>Documentos /
+        <small style="font-size: 16px;">
+            total: {{dataSource.data.length}}
+        </small>
+    </span>
+    <span class="example-spacer"></span>
+    <button (click)="crear_documento()" mat-icon-button class="example-icon"
+        aria-label="Example icon-button with share icon">
+        <mat-icon>add</mat-icon>
+    </button>
+</mat-toolbar>
+
+<app-tabla [dataSource]="dataSource" [total_filas]="dataSource.data.length" [displayedColumns]="displayedColumns"
+    [opciones]="opciones" (llamarEditar)="editar_documento($event)" (llamarEliminar)="eliminar_documento($event)"
+    (llamarHabilitar)="habilitar_documento($event)"></app-tabla>

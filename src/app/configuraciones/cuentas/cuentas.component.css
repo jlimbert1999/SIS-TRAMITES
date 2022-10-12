@@ -1,0 +1,16 @@
+.example-radio-group {
+    display: flex;
+    flex-direction: column;
+    margin: 15px 0;
+    align-items: flex-start;
+    padding-inline: 10px;
+}
+
+.example-radio-button {
+    margin: 10px;
+}
+
+.mat-form-field {
+    font-size: 14px;
+    width: 100%;
+}

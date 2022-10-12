@@ -1,0 +1,11 @@
+ .txt_search {
+     font-size: 14px;
+     width: 100%;
+     padding-left: 30px;
+     padding-right: 30px;
+
+ }
+
+ .example-spacer {
+     flex: 1 1 auto;
+ }

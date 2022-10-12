@@ -1,0 +1,51 @@
+<h1 mat-dialog-title>{{titulo}} de dependencia</h1>
+<div mat-dialog-content>
+
+    <form [formGroup]="Form_Dependencia">
+        <div class="row">
+            <ng-container *ngIf="titulo=='Registro'">
+                <mat-form-field appearance="fill">
+                    <mat-label>Institucion a la pertenecera la dependencia</mat-label>
+                    <mat-select formControlName="id_institucion">
+                        <mat-option (click)="sigla_institucion=institucion.sigla"
+                            *ngFor="let institucion of instituciones" [value]="institucion.id_institucion">
+                            {{institucion.nombre}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="!Form_Dependencia.hasError('required')">
+                        Debe seleccionar la institucion
+                    </mat-error>
+                </mat-form-field>
+            </ng-container>
+            <ng-container *ngIf="titulo=='Edicion'">
+                <p>Pertenece a la institucion: {{sigla_institucion}}</p>
+            </ng-container>
+
+        </div>
+        <div class="row">
+            <div class="col-8">
+                <mat-form-field appearance="fill">
+                    <mat-label>Nombre</mat-label>
+                    <input formControlName="nombre" matInput class="uppercase">
+                    <mat-error *ngIf="!Form_Dependencia.hasError('required')">
+                        Debe ingresar el nombre de la dependencia
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            <div class="col-4">
+                <mat-form-field appearance="fill">
+                    <mat-label>Sigla</mat-label>
+                    <input formControlName="sigla" matInput class="uppercase">
+                    <mat-error>{{ errorMessage }}</mat-error>
+                </mat-form-field>
+            </div>
+        </div>
+
+
+
+    </form>
+</div>
+<div mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" (click)="onNoClick()">Cancelar</button>
+    <button mat-raised-button [disabled]="Form_Dependencia.invalid" color="primary" (click)="guardar()">Guardar</button>
+</div>

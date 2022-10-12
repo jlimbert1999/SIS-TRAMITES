@@ -1,0 +1,33 @@
+<div [@fadeInOnEnter]>
+    <mat-toolbar>
+        <span>Instituciones /
+            <small *ngIf="termino_busqueda==''" style="font-size: 16px;">
+                total: {{Total}}
+            </small>
+            <small *ngIf="termino_busqueda!=''" style="font-size: 16px;">
+                busqueda
+            </small>
+        </span>
+        <span class="example-spacer"></span>
+        <button (click)="crear_institucion()" mat-icon-button class="example-icon"
+            aria-label="Example icon-button with share icon">
+            <mat-icon>add</mat-icon>
+        </button>
+    </mat-toolbar>
+
+    <div style="padding-inline: 30px;">
+        <mat-form-field class="txt_busqueda" appearance="standard">
+            <input [(ngModel)]="termino_busqueda" matInput (keyup)="applyFilter($event)"
+                placeholder="Ingrese el nombre, sigla o telefono de la institucion">
+            <button *ngIf="termino_busqueda" matSuffix mat-icon-button aria-label="Clear" (click)="limpiar_busqueda()">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+    </div>
+
+
+    <app-tabla (eventoPaginacion)="cambiar_institucion($event)" [dataSource]="dataSource" [total_filas]="Total"
+        [displayedColumns]="displayedColumns" [opciones]="opciones" (llamarEditar)="editar_institucion($event)"
+        (llamarEliminar)="eliminar_institucion($event)" (llamarHabilitar)="habilitar_institucion($event)"></app-tabla>
+
+</div>

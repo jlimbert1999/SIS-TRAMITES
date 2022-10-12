@@ -1,0 +1,41 @@
+<mat-toolbar>
+    <span>Reporte ficha</span>
+    <span class="example-spacer"></span>
+    <button (click)="generar_tipo('imprimir')" mat-icon-button matTooltip="Imprimir reporte"
+        class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
+        <mat-icon>print</mat-icon>
+    </button>
+    <button (click)="generar_tipo('guardar')" mat-icon-button matTooltip="Guardar pdf" class="example-icon"
+        aria-label="Example icon-button with share icon">
+        <mat-icon>picture_as_pdf</mat-icon>
+    </button>
+</mat-toolbar>
+
+
+<div class="container-fluid">
+    <div class="row p-4">
+        <div class="col-12 col-md-4">
+            <div class="mb-3">
+                <label for="formGroupExampleInput" class="form-label">Codigo alterno</label>
+                <input #txtCodigo_tramite type="text" class="form-control" id="formGroupExampleInput"
+                    placeholder="Ingrese el alterno del tramite">
+            </div>
+
+            <button color="primary" mat-raised-button
+                (click)=" obtener_reporte_ficha(txtCodigo_tramite.value)">Generar</button>
+        </div>
+        <div class="col-12 col-md-8 border border-dark" style="background-color: #979DAC;">
+            <div class="d-flex justify-content-center" *ngIf="spiner_carga">
+                <mat-spinner [diameter]="200"></mat-spinner>
+            </div>
+            <div id="outerContainer">
+                <div class="pdf-container">
+                    <pdf-viewer [src]="pdfSrc" [rotation]="0" [original-size]="false" [show-all]="true"
+                        [fit-to-page]="false" [zoom]="1" [zoom-scale]="'page-width'" [stick-to-page]="false"
+                        [render-text]="true" [external-link-target]="'blank'" [autoresize]="true" [show-borders]="false"
+                        [render-text]="true" style="width: 100%; height: 500px;"></pdf-viewer>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

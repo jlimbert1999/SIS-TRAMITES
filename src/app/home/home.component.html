@@ -1,0 +1,53 @@
+<div class="example-container dark-theme" [class.example-is-mobile]="mobileQuery.matches">
+    <mat-toolbar color="primary" class="example-toolbar">
+        <button mat-icon-button (click)="snav.toggle()">
+            <mat-icon>menu</mat-icon>
+        </button>
+        <span class="campo_cuenta">
+            <div mat-line> {{Cuenta.funcionario|titlecase}}</div>
+            <div mat-line style="font-size: 11px">{{Cuenta.cargo}}</div>
+        </span>
+        <span class="example-spacer"></span>
+        <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="Opciones Cuenta">
+            <mat-icon>account_circle</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+            <button mat-menu-item>
+                <mat-icon>account_circle</mat-icon>
+                Ajustes cuenta
+            </button>
+            <button mat-menu-item (click)="cerrar_sesion()">
+                <mat-icon>logout</mat-icon>
+                Cerrar sesion
+            </button>
+        </mat-menu>
+    </mat-toolbar>
+
+    <mat-sidenav-container class="example-sidenav-container" [style.marginTop.px]="mobileQuery.matches ? 56 : 0">
+        <mat-sidenav [opened]="true" #snav [mode]="mobileQuery.matches ? 'over' : 'side'"
+            [fixedInViewport]="mobileQuery.matches" fixedTopGap="56">
+            <mat-nav-list>
+                <ng-container *ngFor="let item of Menu">
+                    <div mat-subheader>{{item.modulo}}</div>
+                    <mat-list-item *ngFor="let submodulo of item.submodulos" [routerLink]="submodulo.ruta"
+                        [routerLinkActive]="['active']">
+                        <mat-icon mat-list-icon>
+                            {{submodulo.icon}}</mat-icon>
+                        <a matLine>{{submodulo.nombre}}</a>
+                    </mat-list-item>
+                    <mat-divider></mat-divider>
+                </ng-container>
+            </mat-nav-list>
+
+        </mat-sidenav>
+
+
+        <mat-sidenav-content>
+
+            <div class="container-fluid p-3">
+                <router-outlet></router-outlet>
+            </div>
+        </mat-sidenav-content>
+    </mat-sidenav-container>
+
+</div>

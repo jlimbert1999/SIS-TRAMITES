@@ -1,0 +1,77 @@
+<h1 mat-dialog-title>{{titulo}} de funcionario</h1>
+<div mat-dialog-content>
+    <form [formGroup]="Form_Funcionario">
+        <div class="row">
+            <div class="col">
+                <mat-form-field appearance="fill">
+                    <mat-label>Nombre</mat-label>
+                    <input matInput formControlName="nombre" required class="uppercase">
+                    <mat-error>{{ NombreErrorMessage }}</mat-error>
+                </mat-form-field>
+            </div>
+            <div class="col">
+                <mat-form-field appearance="fill">
+                    <mat-label>Apellido paterno</mat-label>
+                    <input matInput formControlName="apellido_p" required class="uppercase">
+                    <mat-error>{{ ApellidoErrorMessage }}</mat-error>
+                </mat-form-field>
+
+
+            </div>
+            <div class="col">
+                <mat-form-field appearance="fill">
+                    <mat-label>Apellido materno</mat-label>
+                    <input matInput formControlName="apellido_m" class="uppercase">
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <mat-form-field appearance="fill">
+                    <mat-label>Dni</mat-label>
+                    <input matInput formControlName="dni" required class="uppercase">
+                    <mat-error>{{ DniErrorMessage }}</mat-error>
+                </mat-form-field>
+
+            </div>
+            <div class="col">
+                <mat-form-field appearance="fill">
+                    <mat-label>Expedido</mat-label>
+                    <mat-select formControlName="expedido">
+                        <mat-option *ngFor="let lugar of expedido" [value]="lugar.id_expedido">
+                            {{lugar.nombre}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="Form_Funcionario.controls['expedido'].invalid">
+                        Seleccione el lugar
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div class="col">
+                <mat-form-field appearance="fill">
+                    <mat-label>Telefono</mat-label>
+                    <input matInput formControlName="telefono" required class="uppercase">
+                    <mat-error>{{ TelefonoErrorMessage }}</mat-error>
+                </mat-form-field>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-8">
+                <mat-form-field appearance="fill">
+                    <mat-label>Direccion</mat-label>
+                    <input matInput formControlName="direccion" required>
+                    <mat-error *ngIf="Form_Funcionario.controls['direccion'].invalid">
+                        Ingrese la direccion
+                    </mat-error>
+                </mat-form-field>
+            </div>
+        </div>
+      
+    </form>
+
+</div>
+<div mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" (click)="onNoClick()">Cancelar</button>
+    <button mat-raised-button [disabled]="Form_Funcionario.invalid" color="primary" (click)="guardar()">Guardar</button>
+</div>

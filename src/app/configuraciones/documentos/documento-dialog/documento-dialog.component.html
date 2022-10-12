@@ -1,0 +1,27 @@
+<h2 mat-dialog-title>{{Titulo}} de documento</h2>
+<div mat-dialog-content>
+    <form class="example-form" [formGroup]="Form_Documento">
+        <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>Ingrese el nombre</mat-label>
+            <input matInput formControlName="titulo">
+        </mat-form-field>
+
+        <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>Ingrese la sigla</mat-label>
+            <input matInput formControlName="sigla">
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Funcion</mat-label>
+            <select matNativeControl formControlName="funcion">
+                <option value="PERSONAL">Personal</option>
+                <option value="ADJUNTO">Adjunto</option>
+            </select>
+        </mat-form-field>
+    </form>
+
+</div>
+
+<div mat-dialog-actions align="end">
+    <button mat-raised-button mat-dialog-close color="warn">Cancelar</button>
+    <button mat-raised-button (click)="guardar()" color="primary" [disabled]="!Form_Documento.valid">Guardar</button>
+</div>

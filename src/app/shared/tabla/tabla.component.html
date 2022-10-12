@@ -1,0 +1,77 @@
+<div class="mat-elevation-z8">
+    <table mat-table [dataSource]="dataSource">
+
+        <!-- Position Column -->
+        <ng-container [matColumnDef]="campo.key" *ngFor="let campo of displayedColumns">
+            <th mat-header-cell *matHeaderCellDef>{{campo.titulo}}</th>
+            <td mat-cell *matCellDef="let element" [ngSwitch]="campo.key">
+                <ng-container *ngSwitchCase="'activo'">
+                    <p style="color: darkgreen;" *ngIf="element[campo.key]==1">Habilitado</p>
+                    <p style="color: red;" *ngIf="element[campo.key]==0">Deshabilitado</p>
+                </ng-container>
+                <ng-container *ngSwitchCase="'externo'">
+                    {{element[campo.key]==1?'Externo':'Interno'}}
+
+                </ng-container>
+                <ng-container *ngSwitchCase="'alterno'">
+                    <a *ngIf="element.id_interno" style="font-size: 12px;"
+                        [routerLink]="['/inicio/administrar-tramite-interno/ficha', element['id_tramite']]">{{element[campo.key]}}</a>
+                    <a *ngIf="!element.id_interno" style="font-size: 12px;"
+                        [routerLink]="['/inicio/administrar-tramite/ficha', element['id_tramite']]">{{element[campo.key]}}</a>
+                </ng-container>
+                <ng-container *ngSwitchCase="'enviado'">
+                    <p>s{{element[element.key]}}</p>
+                    <!-- {{element[element.key]?'Si':'No'}} -->
+                </ng-container>
+                <ng-container *ngSwitchDefault>{{element[campo.key]}}</ng-container>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="opciones">
+            <th mat-header-cell *matHeaderCellDef>Opciones</th>
+            <td mat-cell *matCellDef="let row; let element; let i=index">
+                <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="Mostrar opciones">
+                    <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu" xPosition="before">
+                    <button *ngIf="opciones.includes('editar')" (click)="editarDatos(element)"
+                        mat-menu-item>
+                        <mat-icon style="color: darkslateblue;">edit</mat-icon>
+                        <span>Editar registro</span>
+                    </button>
+                    <button *ngIf="opciones.includes('eliminar') && element['activo']==1"
+                        (click)="eliminarDatos(element)" mat-menu-item>
+                        <mat-icon style="color: red;">delete</mat-icon>
+                        <span>Eliminar registro</span>
+                    </button>
+                    <button *ngIf="opciones.includes('habilitar') && element['activo']==0"
+                        (click)="habilitarDatos(element)" mat-menu-item>
+                        <mat-icon style="color: cadetblue;">refresh</mat-icon>
+                        <span>Habilitar registro</span>
+                    </button>
+                    <button *ngIf="opciones.includes('desvincular') && element.id_funcionario!=null"
+                        (click)="desvincularCuenta(element)" mat-menu-item>
+                        <mat-icon style="color: cadetblue;">no_accounts</mat-icon>
+                        <span>Desvincular cuenta</span>
+                    </button>
+                    <button *ngIf="opciones.includes('movilidad funcional')" (click)="verMovilidadFuncional(element)"
+                        mat-menu-item>
+                        <mat-icon style="color: cadetblue;">hub</mat-icon>
+                        <span>Movilidad funcional</span>
+                    </button>
+                </mat-menu>
+            </td>
+        </ng-container>
+
+
+
+        <tr mat-header-row *matHeaderRowDef="campos_tabla"></tr>
+        <tr mat-row *matRowDef="let row; columns: campos_tabla;"></tr>
+        <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="4">No se encontraron registros</td>
+        </tr>
+    </table>
+    <mat-paginator *ngIf="number_rows>10" [length]="number_rows" (page)="getPageDetails($event)"
+        [pageSizeOptions]="[10, 25, 35]" aria-label="Select page">
+    </mat-paginator>
+</div>

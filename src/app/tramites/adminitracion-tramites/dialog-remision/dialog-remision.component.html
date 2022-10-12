@@ -1,0 +1,84 @@
+<div class="header" matLine>
+    <h2 mat-dialog-title>Remision tramite</h2>
+    <button mat-icon-button [mat-dialog-close]="false">
+        <mat-icon>close</mat-icon>
+    </button>
+</div>
+<mat-dialog-content>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <mat-form-field appearance="legacy">
+                    <mat-label>Seleccione la institucion</mat-label>
+                    <mat-select #txtInsti>
+                        <mat-option *ngFor="let inst of Instituciones"
+                            (click)="obtener_DependenciasInst(inst.id_institucion)" [value]="inst.id_institucion">
+                            {{inst.nombre}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col">
+                <mat-form-field appearance="legacy">
+                    <mat-label>Seleccione la Dependencia</mat-label>
+                    <mat-select #txtDep (selectionChange)="obtener_usuarios_envio($event.value)">
+                        <mat-option *ngFor="let dep of Dependencias"
+                            [value]="dep.id_dependencia">
+                            {{dep.nombre}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+        </div>
+    </div>
+    <mat-divider></mat-divider>
+    <form class="row g-3">
+        <div class="col-12">
+            <label for="inputAddress" class="form-label">Funcionario que recibira el tramite</label>
+            <mat-form-field class="example-full-width" appearance="outline" dis>
+                <mat-label>Ingrese el nombre o cargo del funcionario a enviar</mat-label>
+                <input matInput aria-label="State" #txt_UserRecep [matAutocomplete]="auto" [formControl]="stateCtrl">
+                <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option [value]="user.funcionario+' '+'('+user.cargo+')'" *ngFor="let user of filteredStates | async" (click)="Funcionario_Receptor=user">
+                        <img matListAvatar src="../../../../assets/img/user.png" alt="..." height="25">
+                        <span style="margin-left: 10px; font-size: 12px;">{{user.funcionario | titlecase}}
+                        </span> (<small style="font-size:11px ;">{{user.cargo}}</small>)
+                        <span *ngIf="user.id" style="font-size: 12px; position:absolute; right:20px; color: green;">En
+                            linea</span>
+                        <span *ngIf="!user.id" style="font-size: 12px; position:absolute; right:20px; color: red;">Sin
+                            conexion</span>
+                    </mat-option>
+                    <mat-option *ngIf="Usuarios.length==0">
+                        No se econtraron funcionarios
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+        </div>
+
+
+        <div class="col-md-6">
+            <label for="inputEmail4" class="form-label">Tramite a enviar</label>
+            <input type="email" disabled class="form-control" id="inputEmail4" [value]="data.titulo">
+        </div>
+        <div class="col-md-6">
+            <label for="inputPassword4" class="form-label">Alterno</label>
+            <input type="text" disabled class="form-control" id="inputPassword4" [value]="data.alterno">
+        </div>
+
+    </form>
+
+
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <div class="input-group">
+        <input class="form-control" placeholder="Ingrese el motivo" [(ngModel)]="data.mensaje">
+        <button align="end" [disabled]="!Funcionario_Receptor || !data.mensaje" mat-raised-button color="primary"
+            (click)="Enviar_Tramite()">
+            Enviar
+            <mat-icon>send</mat-icon>
+        </button>
+    </div>
+
+</mat-dialog-actions>

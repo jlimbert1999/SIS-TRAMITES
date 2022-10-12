@@ -1,0 +1,35 @@
+mat-form-field {
+    width: 100%;
+}
+
+.mat-form-field {
+    margin-top: 16px;
+}
+
+.uppercase {
+    text-transform: uppercase;
+}
+
+
+.example-radio-group {
+    display: flex;
+    flex-direction: column;
+    margin: 15px 0;
+    align-items: flex-start;
+}
+
+.example-radio-button {
+    margin: 5px;
+}
+
+.mat-column-opciones {
+    width: 90px;
+    border-left: 1px solid currentColor;
+    padding-left: 15px;
+    text-align: center;
+}
+
+table {
+    width: 100%;
+}
+

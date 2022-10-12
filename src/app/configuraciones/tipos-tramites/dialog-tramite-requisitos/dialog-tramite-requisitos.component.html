@@ -1,0 +1,34 @@
+<h2 mat-dialog-title>Registro de requisito tramite</h2>
+<div mat-dialog-content>
+    <form [formGroup]="Form_requerimiento">
+        <div class="row">
+            <mat-form-field appearance="legacy">
+                <mat-label>Descripcion del requerimiento</mat-label>
+                <input matInput formControlName="detalle">
+                <mat-error *ngIf="Form_requerimiento.controls['detalle'].invalid">Debe ingresar la descripcion</mat-error>
+            </mat-form-field>
+        </div>
+
+        <div class="row">
+            <mat-form-field appearance="legacy">
+                <mat-label>Tipo documento</mat-label>
+                <mat-select formControlName="tipo_documento">
+                    <mat-option *ngFor="let documento of  TiposDoc" [value]="documento.id_documento">
+                        {{documento.titulo}}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="Form_requerimiento.controls['tipo_documento'].invalid">Seleccione el tipo de documento</mat-error>
+            </mat-form-field>
+        </div>
+
+    </form>
+
+
+
+
+
+</div>
+<div mat-dialog-actions align="end">
+    <button mat-raised-button mat-dialog-close color="warn">Cancelar</button>
+    <button mat-raised-button (click)="guardar()" [disabled]="!Form_requerimiento.valid" color="primary">Guardar</button>
+</div>

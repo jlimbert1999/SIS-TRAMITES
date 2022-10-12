@@ -1,0 +1,32 @@
+<mat-toolbar>
+    <span>Funcionarios /
+        <small *ngIf="termino_busqueda==''" style="font-size: 16px;">
+            total: {{Total}}
+        </small>
+        <small *ngIf="termino_busqueda!=''" style="font-size: 16px;">
+            busqueda
+        </small>
+    </span>
+    <span class="example-spacer"></span>
+
+    <button (click)="crear_funcionario()" mat-icon-button class="example-icon"
+        aria-label="Example icon-button with share icon">
+        <mat-icon>add</mat-icon>
+    </button>
+
+</mat-toolbar>
+
+<mat-form-field class="txt_search" appearance="standard">
+    <mat-label>Filtrar</mat-label>
+    <input #txt_busqueda matInput (keyup)="applyFilter($event)" placeholder="Ingrese el nombre / apellidos /dni" #input>
+    <button *ngIf="txt_busqueda.value!==''" matSuffix mat-icon-button aria-label="Clear"
+        (click)="txt_busqueda.value=''; limpiar_busqueda()">
+        <mat-icon>close</mat-icon>
+    </button>
+</mat-form-field>
+
+
+<app-tabla (eventoPaginacion)="cambiar_paginacion($event)" [dataSource]="dataSource" [total_filas]="Total"
+    [displayedColumns]="displayedColumns" [opciones]="opciones" (llamarEditar)="editar_funcionario($event)"
+    (llamarEliminar)="eliminar_funcionario($event)" (llamarHabilitar)="habilitar_funcionario($event)"
+    (llamarVerMovilidadFuncional)="ver_MovilidadFuncional($event)"></app-tabla>

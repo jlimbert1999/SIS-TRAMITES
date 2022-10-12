@@ -1,0 +1,110 @@
+<h2 mat-dialog-title>{{tituloDialog}} tramite interno</h2>
+<mat-dialog-content>
+    <form [formGroup]="TramiteInternoFormGroup">
+        <ng-template matStepLabel>Detalles del tramite</ng-template>
+
+        <div class="row" *ngIf="tituloDialog == 'Registro'">
+            <mat-form-field appearance="legacy" class="selector-tramite">
+                <mat-label>Seleccion del tipo de tramite a realizar</mat-label>
+                <mat-select  formControlName="id_TipoTramite">
+                    <mat-option *ngFor="let tipo of lista_tramites_internos; let i=index" [value]="tipo.id_TipoTramite"
+                        (click)="seleccionar_TipoTramite(tipo)">
+                        {{i+1}} . {{tipo.titulo| titlecase}}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="TramiteInternoFormGroup.controls['id_TipoTramite'].invalid">Seleccione un
+                    tramite
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div class="row">
+            <div class="col-sm-7">
+                <mat-form-field class="example-full-width" appearance="legacy">
+                    <mat-label>Referencia del tramite</mat-label>
+                    <input matInput #message formControlName="detalle" class="uppercase">
+                    <mat-error *ngIf="TramiteInternoFormGroup.controls['detalle'].invalid">Ingrese la
+                        despcripcion
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            <div class="col-sm-3">
+                <div class="col-sm">
+                    <mat-form-field class="example-full-width" appearance="legacy">
+                        <mat-label>Cite</mat-label>
+                        <input matInput #message formControlName="cite" class="uppercase">
+                    </mat-form-field>
+                </div>
+
+            </div>
+            <div class="col-sm-2">
+                <mat-form-field class="example-full-width" appearance="legacy">
+                    <mat-label>Cantidad hojas</mat-label>
+                    <input type="number" min="0" matInput formControlName="cantidad">
+                    <mat-error *ngIf="TramiteInternoFormGroup.controls['cantidad'].invalid">Ingrese la cantidad
+                        de
+                        hojas</mat-error>
+                </mat-form-field>
+            </div>
+        </div>
+    </form>
+
+    <form [formGroup]="InternoFormGroup">
+        <div class="row">
+            <div class="col">
+                <mat-form-field class="example-full-width" appearance="legacy">
+                    <mat-label>Nombre del remitente</mat-label>
+                    <input matInput #message formControlName="remitente" class="uppercase">
+                    <mat-error *ngIf="InternoFormGroup.controls['remitente'].invalid">Ingrese el nombre del remitente
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            <div class="col">
+                <mat-form-field class="example-full-width" appearance="legacy">
+                    <mat-label>Cargo / Dependencia del remitente</mat-label>
+                    <input matInput #message formControlName="cargo_remitente" class="uppercase">
+                    <mat-error *ngIf="InternoFormGroup.controls['cargo_remitente'].invalid">Ingrese el cargo del
+                        remitente
+                    </mat-error>
+                </mat-form-field>
+
+
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col">
+                <mat-form-field class="example-full-width" appearance="legacy">
+                    <mat-label>Nombre del destinatario</mat-label>
+                    <input matInput #message formControlName="destinatario" class="uppercase">
+                    <mat-error *ngIf="InternoFormGroup.controls['destinatario'].invalid">Ingrese el nombre del
+                        destinatario
+                    </mat-error>
+                </mat-form-field>
+
+
+            </div>
+            <div class="col">
+                <mat-form-field class="example-full-width" appearance="legacy">
+                    <mat-label>Cargo / Dependencia del destinatario</mat-label>
+                    <input matInput #message formControlName="cargo_destinatario" class="uppercase">
+                    <mat-error *ngIf="InternoFormGroup.controls['destinatario'].invalid">Ingrese el cargo del
+                        destinatario</mat-error>
+                </mat-form-field>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <mat-form-field class="example-full-width" appearance="legacy">
+                    <mat-label>Numero de registro interno</mat-label>
+                    <input matInput #message formControlName="numero_correlativo" class="uppercase">
+                </mat-form-field>
+            </div>
+        </div>
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" mat-dialog-close>Cancelar</button>
+    <button mat-raised-button color="primary" (click)="guardar()" [disabled]="!InternoFormGroup.valid || !TramiteInternoFormGroup.valid">Aceptar</button>
+</mat-dialog-actions>

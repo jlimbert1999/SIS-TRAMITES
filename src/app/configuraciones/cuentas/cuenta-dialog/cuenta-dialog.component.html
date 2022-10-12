@@ -1,0 +1,328 @@
+<h1 mat-dialog-title>{{titulo}} de cuenta</h1>
+<div mat-dialog-content>
+    <div *ngIf="titulo == 'Registro'">
+
+
+        <mat-stepper (selectionChange)="generar_datos_cuenta()" orientation="vertical" #stepper>
+            <mat-step [stepControl]="Form_Funcionario" errorMessage="Formulario incorrecto">
+                <ng-template matStepLabel>Datos del funcionario</ng-template>
+                <form [formGroup]="Form_Funcionario">
+                    <div class="row">
+                        <div class="col">
+                            <mat-form-field appearance="fill">
+                                <mat-label>Nombre</mat-label>
+                                <input matInput formControlName="nombre" required class="uppercase">
+                                <mat-error>{{ NombreErrorMessage }}</mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col">
+                            <mat-form-field appearance="fill">
+                                <mat-label>Apellido paterno</mat-label>
+                                <input matInput formControlName="apellido_p" required class="uppercase">
+                                <mat-error>{{ ApellidoErrorMessage }}</mat-error>
+                            </mat-form-field>
+
+                        </div>
+                        <div class="col">
+                            <mat-form-field appearance="fill">
+                                <mat-label>Apellido materno</mat-label>
+                                <input matInput formControlName="apellido_m" class="uppercase">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <mat-form-field appearance="fill">
+                                <mat-label>Dni</mat-label>
+                                <input matInput formControlName="dni" required class="uppercase">
+                                <mat-error>{{ DniErrorMessage }}</mat-error>
+                            </mat-form-field>
+
+                        </div>
+                        <div class="col">
+                            <mat-form-field appearance="fill">
+                                <mat-label>Expedido</mat-label>
+                                <mat-select formControlName="expedido">
+                                    <mat-option *ngFor="let lugar of expedido" [value]="lugar.id_expedido">
+                                        {{lugar.nombre}}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error *ngIf="Form_Funcionario.controls['expedido'].invalid">
+                                    Seleccione el lugar
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="col">
+                            <mat-form-field appearance="fill">
+                                <mat-label>Telefono</mat-label>
+                                <input matInput formControlName="telefono" required class="uppercase">
+                                <mat-error>{{ TelefonoErrorMessage }}</mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-8">
+                            <mat-form-field appearance="fill">
+                                <mat-label>Direccion</mat-label>
+                                <input matInput formControlName="direccion" required>
+                                <mat-error *ngIf="Form_Funcionario.controls['direccion'].invalid">
+                                    Ingrese la direccion
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div>
+                        <button mat-button matStepperNext>Siguiente
+                            <mat-icon>
+                                navigate_next
+                            </mat-icon>
+                        </button>
+                    </div>
+                </form>
+            </mat-step>
+            <mat-step [stepControl]="Form_Cueta" errorMessage="Formulario incorrecto">
+                <ng-template matStepLabel>Datos de la cuenta</ng-template>
+                <form [formGroup]="Form_Cueta">
+
+                    <div class="row">
+                        <div class="col">
+                            <mat-form-field appearance="fill">
+                                <mat-label>Cargo</mat-label>
+                                <mat-select (selectionChange)="data.cargo=$event.source.triggerValue"
+                                    formControlName="id_cargo">
+                                    <mat-option *ngFor="let cargo of cargos" [value]="cargo.id_cargo">
+                                        {{cargo.nombre}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col">
+                            <mat-form-field appearance="fill">
+                                <mat-label>Institucion</mat-label>
+                                <mat-select (selectionChange)="obtener_dependencias($event.value)">
+                                    <mat-option (click)="data.sigla_institucion=inst.sigla"
+                                        *ngFor="let inst of instituciones" [value]="inst.id_institucion">
+                                        {{inst.nombre}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col">
+                            <mat-form-field appearance="fill">
+                                <mat-label>Dependencia</mat-label>
+                                <mat-select (selectionChange)="data.dependencia=$event.source.triggerValue"
+                                    formControlName="id_dependencia">
+                                    <mat-option *ngFor="let dep of dependencias" [value]="dep.id_dependencia">
+                                        {{dep.nombre}}
+                                    </mat-option>
+                                    <mat-option *ngIf="dependencias.length==0">Si resultados</mat-option>
+                                </mat-select>
+                                <mat-error *ngIf="Form_Cueta.controls['id_dependencia'].invalid">
+                                    Seleccione la dependencia
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <mat-form-field appearance="fill">
+                                <mat-label>Login</mat-label>
+                                <input matInput formControlName="login" required>
+                                <mat-error *ngIf="Form_Cueta.controls['login'].invalid">
+                                    Ingrese el login
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col">
+                            <mat-form-field appearance="fill">
+                                <mat-label>Password</mat-label>
+                                <input formControlName="password" matInput [type]="hide ? 'password' : 'text'">
+                                <button mat-icon-button matSuffix (click)="hide = !hide"
+                                    [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                                    <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                                </button>
+                                <mat-error *ngIf="Form_Cueta.controls['password'].invalid">
+                                    Ingrese el password
+                                </mat-error>
+                            </mat-form-field>
+
+                        </div>
+                        <div class="col-4">
+                            <mat-form-field appearance="fill">
+                                <mat-label>Permisos</mat-label>
+                                <mat-select (selectionChange)="data.rol=$event.source.triggerValue"
+                                    formControlName="permisos">
+                                    <mat-option *ngFor="let permiso of permisos" [value]="permiso.id_permiso">
+                                        {{permiso.descripcion | uppercase}}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error *ngIf="Form_Cueta.controls['login'].invalid">
+                                    Seleccione los permisos
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div>
+                        <button mat-button matStepperPrevious>
+                            <mat-icon>
+                                navigate_before
+                            </mat-icon>
+                            Anterior
+                        </button>
+                    </div>
+                </form>
+
+            </mat-step>
+
+        </mat-stepper>
+    </div>
+    <div *ngIf="titulo == 'Edicion'">
+
+        <div *ngIf="data.id_funcionario" class="row">
+            <!-- left column -->
+            <div class="col-md-3 mt-5">
+                <div class="text-center">
+                    <img src="../../../../assets/img/user.png" class="avatar img-circle" alt="avatar">
+
+                </div>
+
+
+            </div>
+
+
+            <!-- edit form column -->
+            <div class="col-md-9 personal-info">
+
+                <h2>Informacion del funcionario</h2>
+                <form>
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            <label for="inputEmail4" class="form-label">Nombre</label>
+                            <input disabled [placeholder]="data.funcionario" type="text" class="form-control"
+                                id="inputEmail4">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="inputPassword4" class="form-label">DNI</label>
+                            <input disabled [placeholder]="data.dni" type="password" class="form-control"
+                                id="inputPassword4">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="inputCity" class="form-label">Cargo</label>
+                            <input disabled [placeholder]="data.cargo" type="text" class="form-control"
+                                id="inputCity">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="inputCity" class="form-label">Institucion</label>
+                            <input disabled [placeholder]="data.sigla_institucion" type="text"
+                                class="form-control" id="inputCity">
+                        </div>
+                        <div class="col-md-8">
+                            <label for="inputCity" class="form-label">Dependencia</label>
+                            <input disabled [placeholder]="data.dependencia" type="text" class="form-control"
+                                id="inputCity">
+                        </div>
+
+
+
+                    </div>
+                    <hr>
+                </form>
+                <h2>Informacion de la cuenta</h2>
+
+
+
+                <form [formGroup]="Form_Cueta">
+                    <div class="row">
+
+                        <div class="col-5">
+                            <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
+                                formControlName="permisos">
+                                <mat-radio-button class="example-radio-button" *ngFor="let permiso of permisos"
+                                    [value]="permiso.id_permiso">
+                                    {{permiso.descripcion}}
+                                </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+                        <div class="col-7">
+                            <div class="row">
+                                <div class="col">
+                                    <mat-form-field appearance="fill">
+                                        <mat-label>Login</mat-label>
+                                        <input matInput formControlName="login" required>
+                                        <mat-error *ngIf="Form_Cueta.controls['login'].invalid">
+                                            Ingrese el login
+                                        </mat-error>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col" *ngIf="actualizar_password">
+                                    <mat-form-field appearance="fill">
+                                        <mat-label>Password</mat-label>
+                                        <input formControlName="password" matInput [type]="hide ? 'password' : 'text'">
+                                        <button mat-icon-button matSuffix (click)="hide = !hide"
+                                            [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                                            <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                                        </button>
+                                        <mat-error *ngIf="actualizar_password">
+                                            Ingrese el password
+                                        </mat-error>
+                                    </mat-form-field>
+                                </div>
+                                <mat-slide-toggle [checked]="actualizar_password" (change)="cambiar_formulario($event.source.checked)">
+                                    {{actualizar_password?"Actualizar login y password":"Actualizar login"}}
+                                </mat-slide-toggle>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div *ngIf="!data.id_funcionario" class="tabla_asignacion">
+            <mat-form-field class="txt_busqueda" appearance="standard">
+                <input [(ngModel)]="termino_busqueda" matInput (keyup)="applyFilter($event)"
+                    placeholder="Ingrese el dni o nombre del funcionario">
+                <button *ngIf="termino_busqueda" matSuffix mat-icon-button aria-label="Clear"
+                    (click)="limpiar_busqueda()">
+                    <mat-icon>close</mat-icon>
+                </button>
+            </mat-form-field>
+            <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+                <ng-container matColumnDef="dni">
+                    <th mat-header-cell *matHeaderCellDef> Dni</th>
+                    <td mat-cell *matCellDef="let element"> {{element.dni}} </td>
+                </ng-container>
+                <ng-container matColumnDef="funcionario">
+                    <th mat-header-cell *matHeaderCellDef> Nombre</th>
+                    <td mat-cell *matCellDef="let element"> {{element.nombre_completo}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="opciones">
+                    <th mat-header-cell *matHeaderCellDef> Opciones</th>
+                    <td mat-cell *matCellDef="let element">
+                        <button (click)=" asignar_cuenta(element)" mat-raised-button color="primary">Asignar</button>
+                    </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell" colspan="4">No se encontraron registros</td>
+                </tr>
+            </table>
+            <mat-paginator *ngIf="Total>10" [length]="Total" (page)="cambiarPagincion($event)"
+                [pageSizeOptions]="[5, 10, 25]" aria-label="Select page">
+            </mat-paginator>
+
+
+
+        </div>
+    </div>
+</div>
+<div mat-dialog-actions align="end">
+    <button mat-raised-button color="warn" (click)="onNoClick()">Cancelar</button>
+    <button *ngIf="titulo == 'Registro'" mat-raised-button [disabled]="Form_Funcionario.invalid || Form_Cueta.invalid" color="primary"
+        (click)="guardar()">Guardar
+        todo</button>
+    <button *ngIf="titulo == 'Edicion'" mat-raised-button [disabled]="Form_Cueta.invalid" color="primary"
+        (click)="guardar()">Guardar</button>
+
+</div>
