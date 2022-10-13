@@ -11,7 +11,7 @@ import { Layout } from '@swimlane/ngx-graph';
 
 import * as moment from 'moment';
 import { Subject } from 'rxjs';
-import { ObservacionModel, TramiteFichaModel } from '../models/tramite.model';
+import { ObservacionModel, ObservacionModel_View, TramiteFichaModel } from '../models/tramite.model';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { ParticipantesWorkflowModel } from '../models/worflow.model';
 
@@ -34,65 +34,34 @@ import Swal from 'sweetalert2';
   ]
 })
 export class FichaTramiteComponent implements OnInit {
-
   dataSource = new MatTableDataSource();
   dataSourceObservacion = new MatTableDataSource();
-  Info_cuenta_Actual = this.loginService.Detalles_Cuenta
-  // tramite: any
+  Tramite: TramiteFichaModel
   Solicitante: SolicitanteModel
   Representante: RepresentanteModel
   Interno: InternoModel
+  Observaciones: ObservacionModel_View[] = []
   Requerimientos_presentados: any[] = []
-  Observaciones: any[] = []
-  spiner_carga: boolean = false
 
-  Otras_Observaciones: any[] = []
-  Mis_Observaciones: any[] = []
-  datosObservacion: any = {}
-  Ubicacion_tramite = this.Info_cuenta_Actual.id_cuenta
-
-
+  Mi_observacion: any
+  Otras_observaciones: ObservacionModel_View[] = []
+  Instituciones: string[] = [] //para ver insit
+  id_tramite: number
 
   @ViewChild(MatAccordion) accordion: MatAccordion;
-
-
   listaWorkflow: any[] = []
-  displayedColumns: string[] = ['Emisor', 'Enviado', 'Receptor', 'Recibido', 'Duracion']
-  Tramite: TramiteFichaModel
-  spiner_carga1: boolean = false
-  Instituciones: string[] = [] //para ver insit
+
+
 
   // Variables para grafica
   nodos: any[] = []
   links: any[] = []
   clusters: { id: string, label: string, childNodeIds: string[] }[] = []
-  view: [number, number]
-  layout: any | Layout = 'dagre';
-  center$: Subject<boolean> = new Subject();
-  layouts: any[] = [
-    {
-      label: 'Completa',
-      value: 'dagre',
-    },
-    {
-      label: 'Minimizada',
-      value: 'colaForceDirected',
-      isClustered: true,
-    },
-    {
-      label: 'Flotante',
-      value: 'd3ForceDirected',
-    },
-  ];
 
-  id_tramite: number
-
-
-  columnsToDisplay = ['completado', 'Emisor', 'Enviado', 'Receptor', 'Recibido']
-  columnsToDisplayWithExpand = [...this.columnsToDisplay, 'expand'];
+  columnsToDisplayWithExpand = ['completado', 'Emisor', 'Enviado', 'Receptor', 'Recibido', 'expand'];
   expandedElement: any
   Duracion: any
-
+  permitir_observaciones: boolean = true
 
   constructor(
     private loginService: LoginService,
@@ -106,14 +75,13 @@ export class FichaTramiteComponent implements OnInit {
     this.activateRoute.params.subscribe(params => {
       if (params['id']) {
         this.id_tramite = params['id']
-        this.registroTramiteService.getInfoFicha(params['id']).subscribe(data => {
+        this.registroTramiteService.getInfoFicha(this.id_tramite).subscribe(data => {
           this.Tramite = data.tramite
           this.Requerimientos_presentados = data.requerimientos
-          
           if (this.Tramite.fecha_finalizacion) {
             this.Duracion = this.crear_duracion(moment(new Date(this.Tramite.fecha_creacion)), moment(new Date(this.Tramite.fecha_finalizacion)))
           }
-          this.getWorkflow(params['id'])
+          this.getWorkflow()
           this.getSolicitud()
           this.obtener_Observaciones()
 
@@ -130,8 +98,8 @@ export class FichaTramiteComponent implements OnInit {
     })
 
   }
-  getWorkflow(id_tramite: number) {
-    this.workflowService.getWorkflow(id_tramite).subscribe(resp => {
+  getWorkflow() {
+    this.workflowService.getWorkflow(this.id_tramite).subscribe(resp => {
       if (resp.workflow.length != 0) {
         let fechaInicio: any, fechaFin: any
         this.listaWorkflow = resp.workflow
@@ -168,20 +136,16 @@ export class FichaTramiteComponent implements OnInit {
               this.listaWorkflow[posFlujo]['NombreInstRecep'] = `${funcionario.sigla}`
             }
           })
-
         })
-
         this.dataSource.data = this.listaWorkflow
-        this.Ubicacion_tramite = this.listaWorkflow[this.listaWorkflow.length - 1].id_cuentaReceptor
         this.crear_Nodos(resp.participantes)
         this.crear_Vinculos()
-        console.log(this.Ubicacion_tramite);
-
+        if (this.listaWorkflow[this.listaWorkflow.length - 1].id_cuentaReceptor != this.loginService.Detalles_Cuenta.id_cuenta) {
+          this.permitir_observaciones = false
+        }
       }
       else {
-
         this.listaWorkflow = []
-        // this.Tramite = undefined
 
       }
     })
@@ -202,7 +166,7 @@ export class FichaTramiteComponent implements OnInit {
       }
       this.nodos.push(aux)
 
-      //**********creacion de cluesters*************
+      //************creacion de cluesters*************
       if (!this.Instituciones.includes(funcionario.sigla)) {
         this.Instituciones.push(funcionario.sigla)
         this.clusters.push({
@@ -289,20 +253,20 @@ export class FichaTramiteComponent implements OnInit {
 
   obtener_Observaciones() {
     this.registroTramiteService.getObservaciones(this.id_tramite).subscribe(data => {
-      console.log(data);
-      data.ids.forEach((id: number) => {
-        if (id != this.loginService.Detalles_Cuenta.id_cuenta) {
-          this.Otras_Observaciones.push(data.observaciones.filter((obs: any) => obs.id_cuenta == id))
-        }
-        else {
-          this.Mis_Observaciones = data.observaciones.filter((obs: any) => obs.id_cuenta == id)
-        }
-      });
+     
+      const indexFound = data.findIndex(obs => obs.id_cuenta == this.loginService.Detalles_Cuenta.id_cuenta)
+      if (indexFound != -1) {
+        this.Mi_observacion = data[indexFound]
+        console.log(this.Mi_observacion);
+      }
+      this.Otras_observaciones = data.filter(obs => obs.id_cuenta != this.loginService.Detalles_Cuenta.id_cuenta)
     })
+   
+   
 
 
   }
-  corregir_Observacion(id_observacion: number, pos: number) {
+  corregir_Observacion() {
     Swal.fire({
       title: `Corregir observacion?`,
       text: 'La observcion sera marcada como corregida',
@@ -314,37 +278,24 @@ export class FichaTramiteComponent implements OnInit {
       icon: 'question'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.registroTramiteService.putObservacion(id_observacion).subscribe((resp: any) => {
-          if (resp.ok) {
-            this.Mis_Observaciones[pos].situacion = true
+        this.registroTramiteService.putObservacion(this.Mi_observacion.id_observacion, this.id_tramite).subscribe(nuevoEstado => {
+          if (nuevoEstado) {
+            this.Tramite.estado = nuevoEstado
           }
+          this.Mi_observacion.situacion = true
         })
-
       }
     })
 
   }
 
-  obtener_observaciones(id_tramite: number) {
-    this.registroTramiteService.getObservaciones(id_tramite).subscribe((observaciones: any) => {
-      observaciones.detalles.ids.forEach((id: number) => {
-        console.log(observaciones);
-        if (id != this.loginService.Detalles_Cuenta.id_cuenta) {
-          this.Otras_Observaciones.push(observaciones.detalles.observaciones.filter((obs: any) => obs.id_cuenta == id))
-        }
-        else {
-          this.Mis_Observaciones = observaciones.detalles.observaciones.filter((obs: any) => obs.id_cuenta == id)
-          this.dataSource.data = this.Mis_Observaciones
-        }
-      });
-    })
-  }
+
 
   agregar_observacion() {
     Swal.fire({
       title: `Registro observacion`,
       text: 'Ingrese la observacion',
-      input: 'text',
+      input: 'textarea',
       inputAttributes: {
         autocapitalize: 'off'
       },
@@ -368,11 +319,10 @@ export class FichaTramiteComponent implements OnInit {
             id_tramite: this.id_tramite,
           }
           this.registroTramiteService.addObservacion(observacion, this.Tramite.estado).subscribe(observacion => {
+            this.Mi_observacion = observacion
             if (this.Tramite.estado == 'En revision' || this.Tramite.estado == 'Inscrito') {
               this.Tramite.estado = "Observado"
             }
-            observacion.situacion = false
-            this.Mis_Observaciones.push(observacion)
           })
         }
       }
@@ -383,7 +333,6 @@ export class FichaTramiteComponent implements OnInit {
 
 
   regresar() {
-    //metodo para volver atras cuando de abre desde ver Inforacion ficha tramite
     this._location.back();
   }
 

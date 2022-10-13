@@ -25,8 +25,10 @@ export class DialogRemisionComponent implements OnInit {
 
   Usuarios: any[] = []
   filteredStates: Observable<any[]>;
-  stateCtrl = new FormControl();
+  stateCtrl = new FormControl('');
 
+  dependenciaCtrl = new FormControl('');
+  filterDependencias: Observable<any[]>;
 
   @ViewChild('txt_UserRecep') inputUserRecep: any;
 
@@ -53,6 +55,10 @@ export class DialogRemisionComponent implements OnInit {
     const filterValue = value.toLowerCase();
     return this.Usuarios.filter(state => state.funcionario.toLowerCase().includes(filterValue) || state.cargo.toLowerCase().includes(filterValue));
   }
+  private _filterDependencias(value: string): { id_dependencia: number, nombre: string }[] {
+    const filterValue = value.toLowerCase();
+    return this.Dependencias.filter(dep => dep.nombre.toLowerCase().includes(filterValue));
+  }
 
   ngOnInit(): void {
     this.socketService.Emitir('usuarios', null).subscribe((users: any) => {
@@ -65,6 +71,10 @@ export class DialogRemisionComponent implements OnInit {
   obtener_DependenciasInst(id_institucion: number) {
     this.configuracionesService.getIDepedencias_habilitadas_deInstitucion(id_institucion).subscribe(dep => {
       this.Dependencias = dep
+      this.filterDependencias = this.dependenciaCtrl.valueChanges.pipe(
+        startWith(''),
+        map(dep => (dep ? this._filterDependencias(dep) : this.Dependencias.slice())),
+      );
     })
   }
 
@@ -175,5 +185,7 @@ export class DialogRemisionComponent implements OnInit {
       }
     })
   }
-
+  onSelectionChange(value:any){
+    console.log(value);
+  } 
 }

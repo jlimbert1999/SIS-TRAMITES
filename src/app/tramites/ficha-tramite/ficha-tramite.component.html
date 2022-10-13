@@ -1,10 +1,14 @@
 <mat-toolbar>
-    <button matTooltip="Regresar" (click)="regresar()" mat-icon-button>
+    <button (click)="regresar()" mat-icon-button>
         <mat-icon>arrow_back</mat-icon>
     </button>
-    <span style="margin-left: 10px;">Ficha de tramite</span>
+    <span>Ficha de tramite</span>
+    <span class="example-spacer"></span>
+    <button [disabled]="Mi_observacion || !permitir_observaciones" (click)="agregar_observacion()" matTooltip="Agregar observacion"  mat-icon-button>
+        <mat-icon>add_comment</mat-icon>
+    </button>
 </mat-toolbar>
-<div class="container" [@slideInLeftOnEnter]>
+<div class="container-fluid" [@slideInLeftOnEnter]>
     <mat-tab-group mat-align-tabs="center">
         <mat-tab>
             <ng-template mat-tab-label>
@@ -64,7 +68,8 @@
                                         <p class="card-text"><strong>Cite:</strong>
                                             {{Tramite.cite!=""?Tramite.cite:'Sin cite'}}</p>
                                         <p class="card-text"><strong>Duracion:</strong>
-                                            <span class="badge text-bg-light">{{Duracion}}</span></p>
+                                            <span class="badge text-bg-light">{{Duracion}}</span>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -141,7 +146,7 @@
                                     </h4>
                                     <div class="card-body">
                                         <div class="row">
-                                            <p><strong>Nombre:</strong> {{Interno.remitente | titlecase }}
+                                            <p><strong>Nombre:</strong> {{Interno.remitente | uppercase }}
                                             </p>
                                             <p class="card-text"><strong>Cargo: </strong> {{Interno.cargo_remitente|
                                                 uppercase}}
@@ -156,88 +161,55 @@
                         <div class="card border-dark" style="margin-top: 10px;">
                             <h4 class="card-header">
                                 <div class="row g-0 text-center">
-                                    <div class="col-sm-6 col-md-10">
-                                        <strong>Observaciones tramite</strong>
-                                    </div>
-                                    <div class="col-6 col-md-2">
-                                        <button [disabled]="Info_cuenta_Actual.id_cuenta!=Ubicacion_tramite"
-                                            matTooltip="Agregar observacion" mat-raised-button color="primary"
-                                            (click)="agregar_observacion()">
-                                            Agregar
-                                            <mat-icon mat-list-icon>
-                                                add
-                                            </mat-icon>
-                                        </button>
-                                    </div>
+                                    <strong>Observaciones tramite</strong>
                                 </div>
                             </h4>
 
 
                             <mat-tab-group mat-align-tabs="center">
-
                                 <mat-tab label="Mis observaciones">
                                     <div class="card-body">
-                                        <div *ngIf="Mis_Observaciones.length==0" class="alert alert-secondary"
-                                            role="alert">
-                                            No registro ninguna observacion para este tramite
+                                        <div *ngIf="!Mi_observacion" class="alert alert-secondary" role="alert">
+                                            Usted no registro observaciones para este tramite
                                         </div>
-                                        <div *ngIf="Mis_Observaciones.length>0" class="col-xs-8 col-xs-offset-2 well">
+                                        <mat-card *ngIf="Mi_observacion">
+                                            <mat-card-content>
+                                                <p> <strong>Situacion: </strong> <span
+                                                        [ngClass]="Mi_observacion.situacion==true?'corregido':'no-corregido'">{{Mi_observacion.situacion==true?'CORREGIDO':'SIN CORREGIR'}}</span></p>
 
+                                                <p> <strong>Registrado en fecha: </strong>
+                                                    {{Mi_observacion.fecha_registro|date:'short'}}</p>
+                                                <p> <strong>Descripcion: </strong> {{Mi_observacion.detalle}}</p>
+                                            </mat-card-content>
+                                            <mat-divider inset></mat-divider>
 
-                                            <table class="table table-sm">
-                                                <thead>
-                                                    <tr>
-                                                        <th scope="col">Nro</th>
-                                                        <th scope="col">Descripcipon</th>
-                                                        <th scope="col">Fecha</th>
-                                                        <th scope="col">Situacion</th>
-                                                        <th scope="col">Opciones</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr *ngFor="let observacion of Mis_Observaciones; let i=index">
-                                                        <th>
-                                                            <p>{{i+1}}</p>
-                                                        </th>
-                                                        <td>{{observacion.detalle}}</td>
-                                                        <td>{{observacion.fecha_registro|date:'short'}}</td>
-
-                                                        <td>
-                                                            <span *ngIf="!observacion.situacion" style="color: red;">Sin
-                                                                corregir</span>
-                                                            <span *ngIf="observacion.situacion"
-                                                                style="color: green;">Corregido</span>
-                                                        </td>
-                                                        <td>
-                                                            <button
-                                                                (click)="corregir_Observacion(observacion.id_observacion, i)"
-                                                                [disabled]="observacion.situacion!=0" mat-raised-button
-                                                                color="primary">Corregir</button>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-
+                                            <mat-card-actions align="end">
+                                                <button *ngIf="Mi_observacion.situacion==0 || Mi_observacion.situacion==false" mat-raised-button color="primary" (click)="corregir_Observacion()">Corregir</button>
+                                            </mat-card-actions>
+                                        </mat-card>
                                     </div>
+
                                 </mat-tab>
                                 <mat-tab label="Otras observaciones">
+
                                     <div class="card-body">
-                                        <div *ngIf="Otras_Observaciones.length==0" class="alert alert-secondary"
+                                        <div *ngIf="Otras_observaciones.length==0" class="alert alert-secondary"
                                             role="alert">
                                             El tramite no tiene observaciones hechas por otros funcionarios
                                         </div>
-                                        <cdk-accordion class="example-accordion" *ngIf="Otras_Observaciones.length>0">
+                                        <cdk-accordion class="example-accordion" *ngIf="Otras_observaciones.length>0">
                                             <cdk-accordion-item
-                                                *ngFor="let observacion of Otras_Observaciones; let index = index;"
+                                                *ngFor="let observacion of Otras_observaciones; let index = index;"
                                                 #accordionItem="cdkAccordionItem" class="example-accordion-item"
                                                 role="button" tabindex="0" [attr.id]="'accordion-header-' + index"
                                                 [attr.aria-expanded]="accordionItem.expanded"
                                                 [attr.aria-controls]="'accordion-body-' + index">
-                                                <div class="example-accordion-item-header"
+                                                <div style="color: red; font-size: 12px;"
+                                                    class="example-accordion-item-header"
                                                     (click)="accordionItem.toggle()">
-                                                    {{observacion[0].funcionario}} ({{ observacion[0].cargo }}) -
-                                                    {{observacion[0].dependencia}}
+                                                    {{observacion.funcionario|titlecase}} ({{
+                                                    observacion.cargo|titlecase }}) -
+                                                    {{observacion.dependencia}}
 
                                                     <span class="example-accordion-item-description">
                                                         Mostrar
@@ -249,33 +221,19 @@
                                                     [style.display]="accordionItem.expanded ? '' : 'none'"
                                                     [attr.id]="'accordion-body-' + index"
                                                     [attr.aria-labelledby]="'accordion-header-' + index">
-                                                    <mat-list role="list" class="list-scroll">
-                                                        <mat-list-item role="listitem" *ngFor="let obs of observacion">
-                                                            <mat-icon *ngIf="!obs.situacion" mat-list-icon
-                                                                style="color: red;" matTooltip="Sin corregir">
-                                                                priority_high</mat-icon>
-                                                            <mat-icon *ngIf="obs.situacion" mat-list-icon
-                                                                style="color: green;" matTooltip="Corregido">done
-                                                            </mat-icon>
-                                                            <div mat-line>{{obs.detalle}}</div>
-                                                            <div mat-line>Registrado en {{obs.fecha_registro | date}}
-                                                            </div>
-                                                        </mat-list-item>
-
-                                                    </mat-list>
+                                                    <p><strong>Descripcion</strong> {{observacion.detalle}}</p>
+                                                    <p><strong>Fecha registro</strong> {{observacion.fecha_registro |
+                                                        date:'short'}}</p>
+                                                    <p> <strong>Situacion: </strong> <span
+                                                            [ngClass]="observacion.situacion==true?'corregido':'no-corregido'">{{observacion.situacion==true?'CORREGIDO':'SIN CORREGIR'}}</span></p>
                                                 </div>
                                             </cdk-accordion-item>
                                         </cdk-accordion>
                                     </div>
                                 </mat-tab>
-
                             </mat-tab-group>
 
-
                         </div>
-
-
-
                     </mat-card-content>
                 </mat-card>
 

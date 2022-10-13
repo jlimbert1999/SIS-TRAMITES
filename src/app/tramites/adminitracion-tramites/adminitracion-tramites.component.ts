@@ -51,7 +51,7 @@ export class AdminitracionTramitesComponent implements OnInit {
 
       this.obtener_tramites()
     }
-    
+
   }
 
 
@@ -105,7 +105,7 @@ export class AdminitracionTramitesComponent implements OnInit {
 
   generar_hoja_ruta(tramite: TramiteModel_View) {
     this.tramiteService.obtener_hoja_ruta(tramite.id_tramite, 'externo').subscribe(data => {
-      generar_hoja_ruta(data)
+      generar_hoja_ruta(data.tramite, data.fecha_generacion)
     })
   }
 

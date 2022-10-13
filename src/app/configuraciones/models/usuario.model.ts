@@ -90,3 +90,15 @@ export interface CuentaModel_View {
     dependencia: string,
     sigla_institucion: string
 }
+
+export interface perfilModel {
+    cargo: string
+    dependencia: string
+    dni: number
+    funcionario: string
+    id_cuenta: number
+    institucion: string
+    login: string
+    telefono: number,
+    direccion:string
+}

@@ -57,10 +57,9 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.socketService.Escuchar('recibir_tramite').subscribe((mail: any) => {
           this.toastr.info(`${mail.funcionario} ha enviado un tramite`, 'Nuevo tramite recibido', {
             positionClass: 'toast-bottom-right',
-            timeOut: 7000,
-            tapToDismiss: true,
+            timeOut: 10000,
+            tapToDismiss: true
           }).onTap.subscribe(x => {
-            console.log('tick');
             this.router.navigate(['home/bandeja-entrada'])
           });
           this.audio.play()
@@ -69,9 +68,10 @@ export class HomeComponent implements OnInit, OnDestroy {
           console.error(resp.message);
         }
       })
-
     }
-
+  }
+  configurar_perfil(){
+    this.router.navigate(['home/perfil'])
   }
 
 }

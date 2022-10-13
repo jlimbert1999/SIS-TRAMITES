@@ -40,7 +40,6 @@ export class AdministracionTramitesInternosComponent implements OnInit {
 
   ngOnInit(): void {
     this.obtener_tramites_interno()
-    console.log(this.paginationService.items_page);
   }
 
   registrar_tramite_interno() {
@@ -123,7 +122,7 @@ export class AdministracionTramitesInternosComponent implements OnInit {
 
   generar_hoja_ruta(Tramite: TramiteInternoModel_View) {
     this.tramiteService.obtener_hoja_ruta(Tramite.id_tramite, 'interno').subscribe(data=>{
-      generar_hoja_ruta_interno(data)
+      generar_hoja_ruta_interno(data.tramite, data.fecha_generacion)
     })
    
   }

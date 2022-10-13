@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { CuentaModel, CuentaModel_View, UsuarioModel } from '../models/usuario.model';
+import { CuentaModel, CuentaModel_View, perfilModel, UsuarioModel } from '../models/usuario.model';
 const base_url = environment.base_url
 @Injectable({
   providedIn: 'root'
@@ -192,5 +192,18 @@ export class ConfiguracionesService {
       .pipe(map(resp => {
         return resp.dependencias
       }))
+  }
+
+  //obtener detalles cuenta actual
+  getDetallesCuenta() {
+    return this.http.get<{ ok: boolean, cuenta: perfilModel }>(`${base_url}/cuentas/perfil`).pipe(
+      map(resp => resp.cuenta)
+    )
+  }
+  putPerfil(data: { login: string, password: string | null }) {
+    //actualizar solo login y password
+    return this.http.put<{ ok: boolean, login: string }>(`${base_url}/cuentas/actualizar/perfil`, data).pipe(
+      map(resp => resp.login)
+    )
   }
 }

@@ -1,7 +1,7 @@
 import jsPDF from 'jspdf';
 import * as moment from 'moment';
 
-const generar_hoja_ruta = (data: any) => {
+const generar_hoja_ruta = (data: any, fecha: string) => {
   let img = new Image()
   img.src = "../../../assets/img/sacaba/cabecera.jpg"
   const doc = new jsPDF();
@@ -14,7 +14,7 @@ const generar_hoja_ruta = (data: any) => {
   });
   doc.setFont("helvetica", "normal");
   doc.setFontSize(12);
-  doc.text(`Impreso: ${moment(new Date()).format('DD-MM-YYYY HH:mm:ss')}`, 200, 20, undefined, "right");
+  doc.text(`Impreso: ${moment(new Date(fecha)).format('DD-MM-YYYY HH:mm:ss')}`, 200, 20, undefined, "right");
   doc.line(200, 30, 10, 30);
   doc.setFontSize(7);
   doc.text("CORRESPONDENCIA", 30, 40, undefined, "center");
@@ -59,7 +59,7 @@ const generar_hoja_ruta = (data: any) => {
   doc.text("NRO DE REGISTRO INTERNO (Correlativo)", 100, 65);
   doc.rect(160, 61, 20, 6);
 
-  doc.text(`REMITENTE: ${data.solicitante}`, 20, 75);
+  doc.text(`REMITENTE: ${data.solicitante}`.toUpperCase(), 20, 75);
   doc.line(35, 76, 90, 76);
   doc.text(`CARGO: P. ${data.tipo_solicitante}`, 100, 75);
   doc.line(110, 76, 170, 76);
@@ -222,7 +222,9 @@ const generar_ficha_tramite = (data: any) => {
 }
 
 
-const generar_hoja_ruta_interno = (data: any) => {
+const generar_hoja_ruta_interno = (data: any, fecha_generacion: string) => {
+  console.log(data);
+  // hoja de ruta generar la salida con fecha actual
   let img = new Image()
   img.src = "../../../assets/img/sacaba/cabecera.jpg"
   const doc = new jsPDF();
@@ -235,7 +237,7 @@ const generar_hoja_ruta_interno = (data: any) => {
   });
   doc.setFont("helvetica", "normal");
   doc.setFontSize(12);
-  doc.text(`Impreso: ${moment(new Date()).format('DD-MM-YYYY HH:mm:ss')}`, 200, 20, undefined, "right");
+  doc.text(`Impreso: ${moment(new Date(fecha_generacion)).format('DD-MM-YYYY HH:mm:ss')}`, 200, 20, undefined, "right");
   doc.line(200, 30, 10, 30);
   doc.setFontSize(7);
   doc.text("CORRESPONDENCIA", 30, 40, undefined, "center");
@@ -302,8 +304,8 @@ const generar_hoja_ruta_interno = (data: any) => {
   doc.text(`Hora`, 100, 90);
   doc.text(`Cantidad`, 120, 90);
 
-  doc.text(`${moment(data.fecha_envio).format('DD-MM-YYYY')}`, 80, 95);
-  doc.text(`${moment(data.fecha_envio).format('HH:mm a')}`, 100, 95);
+  doc.text(`${moment(data.fecha_generacion).format('DD-MM-YYYY')}`, 80, 95);
+  doc.text(`${moment(data.fecha_generacion).format('HH:mm a')}`, 100, 95);
   doc.text(`${data.cantidad}`, 125, 95);
 
   doc.text(`Destinatario 1: ${data.destinatario} (${data.cargo_destinatario})`, 20, 102);
@@ -313,6 +315,7 @@ const generar_hoja_ruta_interno = (data: any) => {
   doc.text(``, 55, 115);
   doc.text("NRO. DE REGISTRO INTERNO (Correlativo)", 100, 110);
   doc.rect(160, 105, 20, 6);
+  doc.text(`${data.detalle == null ? '' : data.detalle}`, 55, 115);
 
   doc.line(180, 127, 140, 127); // horizontal line (largo, altura lado izq, posicion horizontal, altura lado der)
   doc.text("Firma y sello", 150, 130);

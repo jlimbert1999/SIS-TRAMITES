@@ -88,7 +88,7 @@ export class DialogRegistroInternoComponent implements OnInit {
         this.TramiteInternoFormGroup.controls['cantidad'].value,
         this.loginService.Detalles_Cuenta.id_cuenta,
         `${this.Detalles_tramite.codigo_alterno.toUpperCase()}-${this.loginService.Detalles_Cuenta.sigla}`,
-        null,
+        "",
         this.TramiteInternoFormGroup.controls['cite'].value
       )
       const solicitud = {

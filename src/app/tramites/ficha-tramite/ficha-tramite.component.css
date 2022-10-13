@@ -136,3 +136,15 @@ tr.example-element-row:not(.example-expanded-row):active {
 .table-scroll thead>tr>th {
   border: none;
 }
+
+.corregido {
+  color: green;
+}
+
+.no-corregido {
+  color: red;
+}
+
+.example-spacer {
+  flex: 1 1 auto;
+}

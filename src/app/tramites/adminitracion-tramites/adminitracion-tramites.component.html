@@ -1,7 +1,7 @@
 <p>
     <mat-toolbar class="example-toolbar">
         <ng-container *ngIf="!pagitationService.modo_busqueda">
-            <span>Tramites /
+            <span>TRAMITES EXTERNOS /
                 <small style="font-size: 15px;">
                     Total: {{Total}}
                 </small>
@@ -91,15 +91,15 @@
                     </button>
                     <button (click)="abrir_DialogRemision(element)" *ngIf="!element.enviado" mat-menu-item>
                         <mat-icon>send</mat-icon>
-                        <span>Remitir tramite</span>
+                        <span>Enviar tramite</span>
                     </button>
                     <button (click)="imprimir_ficha(element)" mat-menu-item>
-                        <mat-icon>print</mat-icon>
-                        <span>Generar ficha</span>
+                        <mat-icon>receipt_long</mat-icon>
+                        <span>Ficha tramite</span>
                     </button>
                     <button (click)="generar_hoja_ruta(element)" *ngIf="element.enviado" mat-menu-item>
-                        <mat-icon>print</mat-icon>
-                        <span>Generar ruta</span>
+                        <mat-icon>summarize</mat-icon>
+                        <span>Hoja de ruta</span>
                     </button>
                 </mat-menu>
 

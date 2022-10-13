@@ -2,14 +2,14 @@ import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs';
-import { Tramite_Model, TramiteModel_View, TramiteFichaModel, TramiteInternoModel_View, ObservacionModel } from '../models/tramite.model';
+import { Tramite_Model, TramiteModel_View, TramiteFichaModel, TramiteInternoModel_View, ObservacionModel, ObservacionModel_View } from '../models/tramite.model';
 const base_url = environment.base_url
 
 @Injectable({
   providedIn: 'root'
 })
 export class RegistroTramitesService {
-  public paginacion=0
+  public paginacion = 0
   constructor(private http: HttpClient) { }
   addTramite(solicitud: { tramite: Tramite_Model, solicitante: any, representante: any, interno: any }) {
     return this.http.post(`${base_url}/tramite`, solicitud)
@@ -78,13 +78,14 @@ export class RegistroTramitesService {
     )
   }
   getObservaciones(id_tramite: number) {
-    return this.http.get<{ ok: boolean, observaciones: any, ids: number[] }>(`${base_url}/observacion/${id_tramite}`).pipe(map(resp => {
-      return { ids: resp.ids, observaciones: resp.observaciones }
-
-    }))
+    return this.http.get<{ oK: boolean, observaciones: ObservacionModel_View[] }>(`${base_url}/observacion/${id_tramite}`).pipe(map(resp => resp.observaciones))
   }
-  putObservacion(id_observacion: number) {
-    return this.http.put(`${base_url}/observacion/${id_observacion}`, { situacion: true })
+
+
+  putObservacion(id_observacion: number, id_tramite: number) {
+    return this.http.put<{ ok: boolean, estado: string | null }>(`${base_url}/observacion/${id_observacion}`, { id_tramite }).pipe(
+      map(resp => resp.estado)
+    )
   }
 
 
@@ -114,8 +115,8 @@ export class RegistroTramitesService {
       }))
   }
   obtener_hoja_ruta(id_tramite: number, tipo: 'interno' | 'externo') {
-    return this.http.get<{ ok: boolean, tramite: any }>(`${base_url}/tramite/hoja-ruta/${id_tramite}?tipo=${tipo}`).pipe(map(resp => {
-      return resp.tramite
+    return this.http.get<{ ok: boolean, tramite: any, fecha_generacion: string }>(`${base_url}/tramite/hoja-ruta/${id_tramite}?tipo=${tipo}`).pipe(map(resp => {
+      return { tramite: resp.tramite, fecha_generacion: resp.fecha_generacion }
     }))
   }
 

@@ -1,7 +1,7 @@
 <p>
     <mat-toolbar class="example-toolbar">
         <ng-container *ngIf="!modo_busqueda">
-            <span>Tramites internos /
+            <span>TRAMITES INTERNOS /
                 <small style="font-size: 15px;">
                     total: {{Total}}
                 </small>
@@ -101,10 +101,10 @@
                     </button>
                     <button (click)="abrir_DialogRemision(element)" *ngIf="!element.enviado" mat-menu-item>
                         <mat-icon>send</mat-icon>
-                        <span>Remitir tramite</span>
+                        <span>Enviar tramite</span>
                     </button>
                     <button (click)="generar_hoja_ruta(element)" mat-menu-item>
-                        <mat-icon>print</mat-icon>
+                        <mat-icon>summarize</mat-icon>
                         <span>Hoja de ruta</span>
                     </button>
                 </mat-menu>

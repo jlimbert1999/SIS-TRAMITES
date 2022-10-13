@@ -5,6 +5,7 @@ import { CuentasComponent } from '../configuraciones/cuentas/cuentas.component';
 import { DependenciasComponent } from '../configuraciones/dependencias/dependencias.component';
 import { DocumentosComponent } from '../configuraciones/documentos/documentos.component';
 import { InstitucionesComponent } from '../configuraciones/instituciones/instituciones.component';
+import { PerfilComponent } from '../configuraciones/perfil/perfil.component';
 import { TiposTramitesComponent } from '../configuraciones/tipos-tramites/tipos-tramites.component';
 import { UsuariosComponent } from '../configuraciones/usuarios/usuarios.component';
 import { AdminGuard } from '../guards/admin.guard';
@@ -49,6 +50,8 @@ const routes: Routes = [
             { path: 'reporte-ficha', component: ReporteFichaComponent },
             { path: 'reporte-tipo', component: ReporteTipoComponent },
             { path: 'reporte-estado', component: ReporteEstadoComponent },
+
+            { path: 'perfil', component: PerfilComponent },
 
         ]
     }

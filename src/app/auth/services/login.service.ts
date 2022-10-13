@@ -14,7 +14,7 @@ const base_url = environment.base_url
 })
 export class LoginService {
   Detalles_Cuenta: { funcionario: string, cargo: string, permiso: string, id_cuenta: number, sigla: string }
-  constructor(private http: HttpClient, private router:Router) { }
+  constructor(private http: HttpClient, private router: Router) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const headers = new HttpHeaders({
@@ -33,12 +33,12 @@ export class LoginService {
 
   manejoErrores(error: HttpErrorResponse) {
     console.log('Error peticion', error);
-    if (error.status == 404) {
-      Swal.fire('Solictud incorrecta ', 'No se econtro la ruta solicitada', 'error')
-    }
-    else {
-      Swal.fire('error', error.error.message, 'error')
-    }
+    // if (error.status == 404) {
+    //   Swal.fire('Solictud incorrecta ', 'No se econtro la ruta solicitada', 'error')
+    // }
+    // else {
+    //   Swal.fire('error', error.error.message, 'error')
+    // }
     return throwError(() => error);
   }
 
@@ -52,6 +52,9 @@ export class LoginService {
     return this.http.post(`${base_url}/cuentas/login`, formData).pipe(tap(
       (res: any) => {
         localStorage.setItem('token', res.token)
+       
+      }, (error) => {
+        Swal.fire('Error ingreso', error.error.message, 'error')
       }
     ))
   }

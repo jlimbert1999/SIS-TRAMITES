@@ -19,14 +19,16 @@
                 </mat-form-field>
             </div>
             <div class="col">
+                
+
                 <mat-form-field appearance="legacy">
                     <mat-label>Seleccione la Dependencia</mat-label>
-                    <mat-select #txtDep (selectionChange)="obtener_usuarios_envio($event.value)">
-                        <mat-option *ngFor="let dep of Dependencias"
-                            [value]="dep.id_dependencia">
-                            {{dep.nombre}}
-                        </mat-option>
-                    </mat-select>
+                    <input matInput aria-label="State" [matAutocomplete]="auto1" [formControl]="dependenciaCtrl">
+                    <mat-autocomplete  #auto1="matAutocomplete">
+                        <mat-option (onSelectionChange)="obtener_usuarios_envio(dep.id_dependencia)" *ngFor="let dep of filterDependencias | async" [value]="dep.nombre">
+                            <span>{{dep.nombre}}</span>
+                        </mat-option> 
+                    </mat-autocomplete>
                 </mat-form-field>
             </div>
 
@@ -40,7 +42,8 @@
                 <mat-label>Ingrese el nombre o cargo del funcionario a enviar</mat-label>
                 <input matInput aria-label="State" #txt_UserRecep [matAutocomplete]="auto" [formControl]="stateCtrl">
                 <mat-autocomplete #auto="matAutocomplete">
-                    <mat-option [value]="user.funcionario+' '+'('+user.cargo+')'" *ngFor="let user of filteredStates | async" (click)="Funcionario_Receptor=user">
+                    <mat-option [value]="user.funcionario+' '+'('+user.cargo+')'"
+                        *ngFor="let user of filteredStates | async" (click)="Funcionario_Receptor=user">
                         <img matListAvatar src="../../../../assets/img/user.png" alt="..." height="25">
                         <span style="margin-left: 10px; font-size: 12px;">{{user.funcionario | titlecase}}
                         </span> (<small style="font-size:11px ;">{{user.cargo}}</small>)

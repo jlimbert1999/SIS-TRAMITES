@@ -34,7 +34,9 @@ table {
     background-color: #577590;
     color: white;
 }
+
 .mat-row:hover {
     background-color: #D0D3D4;
     cursor: pointer;
 }
+

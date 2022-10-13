@@ -1,1 +1,76 @@
-<p>perfil works!</p>
+<div [@fadeInOnEnter] class="container bootstrap snippets bootdey" style="margin-top: 10px;" *ngIf="detallesCuenta">
+    <h1 class="text-primary">Mi perfil</h1>
+    <hr>
+    <div class="row">
+        
+        <!-- left column -->
+        <div class="col-md-3">
+            <div class="text-center">
+                <img src="../../../assets/img/user.png" class="avatar img-circle img-thumbnail" alt="avatar">
+            </div>
+        </div>
+
+        <!-- edit form column -->
+        <div class="col-md-9 personal-info">
+            <div *ngIf="mensaje_confirmacion" class="alert alert-success" role="alert">
+                Cuenta actualizada!
+              </div>
+            <h2>Detalles funcionario</h2>
+            <form [formGroup]="Form_Cuenta" class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Dependencia</label>
+                    <input disabled type="text" class="form-control" [value]="detallesCuenta.dependencia">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Institucion</label>
+                    <input disabled type="text" class="form-control" [value]="detallesCuenta.institucion">
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Cargo</label>
+                    <input disabled type="text" class="form-control" [value]="detallesCuenta.cargo">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Funcinario</label>
+                    <input disabled type="text" [value]="detallesCuenta.funcionario" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Dni</label>
+                    <input disabled type="text" [value]="detallesCuenta.dni" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Telefono</label>
+                    <input disabled type="text" [value]="detallesCuenta.telefono" class="form-control">
+                </div>
+                <hr>
+                <h2>Detalles cuenta</h2>
+               
+                <div class="col-md-6">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>Nombre de usuario</mat-label>
+                        <input formControlName="login" matInput>
+                      </mat-form-field>
+                </div>
+                <div *ngIf="actualizar_password" class="col-md-6">
+                    <mat-form-field appearance="fill">
+                        <mat-label>Contraseña</mat-label>
+                        <input formControlName="password" matInput [type]="hide ? 'password' : 'text'">
+                        <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hide">
+                          <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                        </button>
+                      </mat-form-field>
+                </div>
+                <div class="col-12">
+                    <mat-checkbox [checked]="actualizar_password" (change)="cambiar_formulario($event.checked)" class="example-margin">
+                        {{actualizar_password==true?'Acutalizar nombre de usuario y contrasena':'Actualizar nombre de usuario'}}
+                    </mat-checkbox>
+                </div>
+            </form>
+          
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="regresar()">Cancelar</button>
+                <button [disabled]="Form_Cuenta.invalid" type="button" class="btn btn-primary" (click)="guardar()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<hr>

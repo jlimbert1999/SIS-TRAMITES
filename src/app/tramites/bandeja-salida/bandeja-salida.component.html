@@ -77,6 +77,20 @@
                 </div>
             </td>
         </ng-container>
+        <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef>Estado</th>
+            <td mat-cell *matCellDef="let element"> 
+                <span class="badge" [ngClass]="[
+                element.estado=='Inscrito'?'text-bg-primary':'',
+                element.estado=='En revision'?'text-bg-secondary':'',
+                element.estado=='Observado'?'text-bg-warning':'',
+                element.estado=='Concluido'?'text-bg-dark':'',
+                ]">
+                {{element.estado}}
+            </span>
+            </td>
+        </ng-container>
+
         <ng-container matColumnDef="fecha_envio">
             <th mat-header-cell *matHeaderCellDef>Fecha envio</th>
             <td mat-cell *matCellDef="let element"> {{element.fecha_envio|date:'short'}} </td>
@@ -105,8 +119,8 @@
                         <span>Reenviar tramite</span>
                     </button>
                     <button mat-menu-item *ngIf="permisos=='receptionist_role'" (click)="crear_hoja_ruta(element)">
-                        <mat-icon>print</mat-icon>
-                        Hoja de ruta
+                        <mat-icon>summarize</mat-icon>
+                        <span>Hoja de ruta</span>
                     </button>
                 </mat-menu>
             </td>
@@ -159,7 +173,7 @@
                             <p>
                                 EL TRAMITE FUE REENVIADO
                             </p>
-                        
+
                         </div>
 
                     </div>

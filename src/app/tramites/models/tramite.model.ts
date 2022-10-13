@@ -78,7 +78,7 @@ export interface TramiteFichaModel {
     alterno: string,
     pin: string,
     detalle: string,
-    cantidad: number,
+    cantidad: string,
     activo: boolean,
     cite: string
     fecha_creacion: string,
@@ -99,7 +99,7 @@ export interface TramiteInternoModel_View {
     alterno: string
     pin: number
     detalle: string
-    cantidad: number
+    cantidad: string
     activo: boolean
     cite: string
     fecha_creacion: string
@@ -124,6 +124,18 @@ export interface ObservacionModel {
     fecha_registro?: string
     situacion?: boolean
 }
+
+export interface ObservacionModel_View {
+    id_observacion: number
+    id_cuenta: number
+    fecha_registro: string
+    detalle: string
+    situacion: boolean
+    funcionario: string
+    cargo: string
+    dependencia: string
+}
+
 
 
 
