@@ -5,8 +5,8 @@ import { HomeRoutingModule } from './home/home-routing.module';
 import { PageNoFoundComponent } from './page-no-found/page-no-found.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/home/tramites-internos', pathMatch: 'full' },
-  { path: '**', redirectTo: '/home/tramites-internos' }
+  { path: '', redirectTo: '/home', pathMatch: 'full' },
+  { path: '**', redirectTo: '/home' }
 ];
 
 

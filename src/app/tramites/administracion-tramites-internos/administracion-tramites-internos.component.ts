@@ -1,13 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { DialogRemisionComponent } from '../adminitracion-tramites/dialog-remision/dialog-remision.component';
 import { TramiteInternoModel_View } from '../models/tramite.model';
-import { RegistroTramitesInternosService } from '../services/registro-tramites-internos.service';
 import { RegistroTramitesService } from '../services/registro-tramites.service';
 import { DialogRegistroInternoComponent } from './dialog-registro-interno/dialog-registro-interno.component';
-import jsPDF from 'jspdf';
-import * as moment from 'moment';
 import { fadeInOnEnterAnimation } from 'angular-animations';
 import { generar_hoja_ruta_interno } from 'src/app/generacion-pdfs/generacion-pdf';
 import { PaginationService } from '../services/pagination.service';
@@ -32,14 +29,23 @@ export class AdministracionTramitesInternosComponent implements OnInit {
   termino_busqueda: string
   modo_busqueda: boolean = false;
   carga_spiner = false
+  @ViewChild("myInput") private myInput: ElementRef;
+
   constructor(
     public dialog: MatDialog,
-    private tramiteService: RegistroTramitesService,
-    private paginationService:PaginationService
+    public tramiteService: RegistroTramitesService,
+    private paginationService: PaginationService
   ) { }
 
   ngOnInit(): void {
-    this.obtener_tramites_interno()
+    
+    if (this.tramiteService.termino_busqueda !== '') {
+      this.buscar_tramite()
+    }
+    else {
+      this.obtener_tramites_interno()
+    }
+    
   }
 
   registrar_tramite_interno() {
@@ -59,7 +65,6 @@ export class AdministracionTramitesInternosComponent implements OnInit {
   obtener_tramites_interno() {
     this.carga_spiner = true
     this.tramiteService.getTramites_internos().subscribe(tramites => {
-      console.log(tramites);
       this.Total = tramites.total
       this.carga_spiner = false
       this.Tramites = tramites.Tramites
@@ -102,29 +107,45 @@ export class AdministracionTramitesInternosComponent implements OnInit {
 
   }
 
-  aplicarFiltro(event: Event) {
-    // const filterValue = (event.target as HTMLInputElement).value;
-    // if (filterValue !== '') {
-    //   this.tramiteService.buscar_tramite(filterValue).subscribe(tramites => {
-    //     this.Tramites = tramites
-    //   })
-    // }
-    // else {
-    //   this.obtener_tramites()
-    // }
+  buscar_tramite() {
+    if (this.tramiteService.termino_busqueda !== '') {
+      this.tramiteService.buscar_tramite_interno(this.tramiteService.termino_busqueda).subscribe(tramites => {
+        this.Tramites = tramites
+        this.dataSource.data = this.Tramites
+      })
+    }
+
   }
 
   desactivar_busqueda() {
-    this.paginator = 0
-    this.termino_busqueda = ""
-    // this.obtener_tramites()
+    this.tramiteService.termino_busqueda = ""
+    this.tramiteService.modo_busqueda = false
+    this.obtener_tramites_interno()
   }
 
   generar_hoja_ruta(Tramite: TramiteInternoModel_View) {
-    this.tramiteService.obtener_hoja_ruta(Tramite.id_tramite, 'interno').subscribe(data=>{
+    this.tramiteService.obtener_hoja_ruta(Tramite.id_tramite, 'interno').subscribe(data => {
       generar_hoja_ruta_interno(data.tramite, data.fecha_generacion)
     })
-   
+
+  }
+
+  cambiar_paginacion(evento: any) {
+    this.tramiteService.items_page = evento.pageSize
+    this.tramiteService.pageIndex = evento.pageIndex
+    if (evento.pageIndex > evento.previousPageIndex) {
+      this.tramiteService.next_page()
+    }
+    else if (evento.pageIndex < evento.previousPageIndex) {
+      this.tramiteService.previus_page()
+    }
+    this.obtener_tramites_interno()
+  }
+  activar_busqueda() {
+    this.tramiteService.modo_busqueda = true
+    setTimeout(() => {
+      this.myInput.nativeElement.focus()
+    })
   }
 
 }

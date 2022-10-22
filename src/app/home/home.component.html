@@ -1,4 +1,4 @@
-<div class="example-container dark-theme" [class.example-is-mobile]="mobileQuery.matches">
+<div [@fadeInOnEnter] class="example-container dark-theme" [class.example-is-mobile]="mobileQuery.matches">
     <mat-toolbar color="primary" class="example-toolbar">
         <button mat-icon-button (click)="snav.toggle()">
             <mat-icon>menu</mat-icon>
@@ -44,7 +44,7 @@
 
         <mat-sidenav-content>
 
-            <div class="container-fluid p-3">
+            <div class="container-fluid p-2">
                 <router-outlet></router-outlet>
             </div>
         </mat-sidenav-content>

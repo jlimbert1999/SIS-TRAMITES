@@ -4,11 +4,15 @@ import { LoginService } from '../auth/services/login.service';
 import { Router } from '@angular/router';
 import { SocketService } from '../auth/services/socket.service';
 import { ToastrService } from 'ngx-toastr';
+import { fadeInOnEnterAnimation } from 'angular-animations';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.css'],
+  animations:[
+    fadeInOnEnterAnimation()
+  ]
 })
 export class HomeComponent implements OnInit, OnDestroy {
   Cuenta: any = this.loginService.Detalles_Cuenta

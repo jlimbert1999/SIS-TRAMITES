@@ -68,7 +68,6 @@ export class AdminitracionTramitesComponent implements OnInit {
 
 
   registrar_Tramite() {
-    this.tramiteService.paginacion++
     const dialogRef = this.dialog.open(DialogRegistroTramiteComponent, {
       data: {},
       width: '900px'

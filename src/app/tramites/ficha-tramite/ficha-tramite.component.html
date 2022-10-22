@@ -391,7 +391,7 @@
                                         <mat-card-content style="line-height: 5px;">
                                             <p class="card-text"><small class="text-muted"><strong>Dependencia:
                                                     </strong>
-                                                    {{node.data.NombreDep}}</small></p>
+                                                    {{node.data.NombreDep|slice:0:35}}...</small></p>
                                             <p> <small class="text-muted"> <strong>Institucion:
                                                     </strong>{{node.data.Sigla}}</small></p>
                                         </mat-card-content>

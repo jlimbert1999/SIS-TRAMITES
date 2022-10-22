@@ -3,10 +3,14 @@ import { LoginService } from '../../services/login.service';
 import Swal from 'sweetalert2'
 import { Router } from '@angular/router';
 import { FormBuilder, Validators } from '@angular/forms';
+import { fadeInDownOnEnterAnimation } from 'angular-animations';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
+  animations:[
+    fadeInDownOnEnterAnimation()
+  ]
 })
 export class LoginComponent implements OnInit {
   hide = true;

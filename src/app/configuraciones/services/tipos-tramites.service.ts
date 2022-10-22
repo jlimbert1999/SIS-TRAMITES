@@ -14,7 +14,7 @@ export class TiposTramitesService {
   constructor(private http: HttpClient) { }
 
   getRequerimientos_Habilitados(id_TipoTramite: number) {
-    return this.http.get(`${base_url}/api/requerimientos_Habilitados/${id_TipoTramite}`)
+    return this.http.get(`${base_url}/tramites/requisitos/${id_TipoTramite}`)
   }
   // NUEVOS
   getTipos(desde: number, filas: number = 10) {

@@ -33,12 +33,12 @@ export class LoginService {
 
   manejoErrores(error: HttpErrorResponse) {
     console.log('Error peticion', error);
-    // if (error.status == 404) {
-    //   Swal.fire('Solictud incorrecta ', 'No se econtro la ruta solicitada', 'error')
-    // }
-    // else {
-    //   Swal.fire('error', error.error.message, 'error')
-    // }
+    if (error.status == 404) {
+      Swal.fire('Solictud incorrecta ', 'No se econtro la ruta solicitada', 'error')
+    }
+    else if(error.status == 401) {
+      Swal.fire('error', error.error.message, 'error')
+    }
     return throwError(() => error);
   }
 
@@ -52,16 +52,18 @@ export class LoginService {
     return this.http.post(`${base_url}/cuentas/login`, formData).pipe(tap(
       (res: any) => {
         localStorage.setItem('token', res.token)
-       
+        this.router.navigateByUrl('/home/tramites-internos')
+
       }, (error) => {
         Swal.fire('Error ingreso', error.error.message, 'error')
       }
     ))
   }
   validar_token(): Observable<boolean> {
-    return this.http.get(`${base_url}/cuentas/validar`).pipe(
-      map((resp: any) => {
-        this.Detalles_Cuenta = jwt_decode(this.token)
+    return this.http.get<{ok:boolean, token:string}>(`${base_url}/cuentas/validar`).pipe(
+      map(res=> {
+        this.Detalles_Cuenta = jwt_decode(res.token)
+        localStorage.setItem('token', res.token)
         return true
       }), catchError(err => {
         return of(false)

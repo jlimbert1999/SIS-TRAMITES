@@ -1,7 +1,7 @@
 <p>
     <mat-toolbar class="example-toolbar">
         <ng-container *ngIf="!pagitationService.modo_busqueda">
-            <span>TRAMITES EXTERNOS /
+            <span>Tramites externos /
                 <small style="font-size: 15px;">
                     Total: {{Total}}
                 </small>
@@ -34,7 +34,7 @@
 
 <mat-spinner [diameter]="150" *ngIf="cargando"></mat-spinner>
 <div [@fadeInOnEnter] class="mat-elevation-z8">
-    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+    <table mat-table  [dataSource]="dataSource" class="mat-elevation-z8">
         <ng-container matColumnDef="enviado">
             <th mat-header-cell *matHeaderCellDef> Enviado </th>
             <td mat-cell *matCellDef="let element">
