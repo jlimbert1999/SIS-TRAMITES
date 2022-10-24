@@ -13,7 +13,16 @@ const base_url = environment.base_url
   providedIn: 'root'
 })
 export class LoginService {
-  Detalles_Cuenta: { funcionario: string, cargo: string, permiso: string, id_cuenta: number, sigla: string }
+  Detalles_Cuenta: {
+    funcionario: string,
+    id_funcionario: number,
+    cargo: string,
+    permiso: string,
+    id_cuenta: number,
+    sigla: string
+  }
+  Menu:any[]=[]
+
   constructor(private http: HttpClient, private router: Router) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -36,7 +45,7 @@ export class LoginService {
     if (error.status == 404) {
       Swal.fire('Solictud incorrecta ', 'No se econtro la ruta solicitada', 'error')
     }
-    else if(error.status == 401) {
+    else if (error.status == 401) {
       Swal.fire('error', error.error.message, 'error')
     }
     return throwError(() => error);
@@ -49,20 +58,20 @@ export class LoginService {
     else {
       localStorage.removeItem('login')
     }
-    return this.http.post(`${base_url}/cuentas/login`, formData).pipe(tap(
+    return this.http.post<{ ok: boolean, token: string, permiso: string }>(`${base_url}/cuentas/login`, formData).pipe(tap(
       (res: any) => {
         localStorage.setItem('token', res.token)
-        this.router.navigateByUrl('/home/tramites-internos')
-
+        return res.permiso
       }, (error) => {
         Swal.fire('Error ingreso', error.error.message, 'error')
       }
     ))
   }
   validar_token(): Observable<boolean> {
-    return this.http.get<{ok:boolean, token:string}>(`${base_url}/cuentas/validar`).pipe(
-      map(res=> {
+    return this.http.get<{ ok: boolean, token: string, Menu:any }>(`${base_url}/cuentas/validar`).pipe(
+      map(res => {
         this.Detalles_Cuenta = jwt_decode(res.token)
+        this.Menu=res.Menu
         localStorage.setItem('token', res.token)
         return true
       }), catchError(err => {
@@ -70,102 +79,7 @@ export class LoginService {
       })
     )
   }
-  get Menu() {
-    let Modulos: object[] = []
-    if (this.Detalles_Cuenta.permiso == 'admin_role') {
-      Modulos = [
-        {
-          modulo: "Usuarios",
-          submodulos: [
-            { nombre: 'Funcionarios', ruta: 'usuarios', icon: 'group' },
-            { nombre: 'Cuentas', ruta: 'cuentas', icon: 'badge' },
-            { nombre: 'Grupo de trabajo', ruta: 'groupware', icon: 'groups' },
-
-          ]
-        },
-        {
-          modulo: "Tramites",
-          submodulos: [
-            { nombre: 'Tipos de Tramites', ruta: 'tipos', icon: 'summarize' }
-
-          ]
-        },
-        {
-          modulo: "Configuraciones",
-          submodulos: [
-            { nombre: 'Instituciones', ruta: 'instituciones', icon: 'apartment' },
-            { nombre: 'Dependencias', ruta: 'dependencias', icon: 'home_work' },
-            { nombre: 'Cargos', ruta: 'cargos', icon: 'assignment_ind' },
-            // { nombre: 'Documentos', ruta: 'administrar-tipos-documentos', icon: 'contact_page' }
-          ]
-        },
-        {
-          modulo: "Documentos",
-          submodulos: [
-            { nombre: 'Tipos de documento', ruta: 'documentos', icon: 'apartment' },
-          ]
-        }
-
-
-      ]
-
-    }
-    else if (this.Detalles_Cuenta.permiso == 'receptionist_role') {
-      Modulos = [
-        {
-          modulo: "Tramites",
-          submodulos: [
-            { nombre: 'Tramites externos', ruta: 'tramites', icon: 'text_snippet' },
-            { nombre: 'Tramites internos', ruta: 'tramites-internos', icon: 'text_snippet' }
-
-          ]
-        },
-        {
-          modulo: "Bandejas",
-          submodulos: [
-            { nombre: 'Bandeja entrada', ruta: 'bandeja-entrada', icon: 'mark_as_unread' },
-            { nombre: 'Bandeja salida', ruta: 'bandeja-salida', icon: 'outgoing_mail' },
-          ]
-        },
-        {
-          modulo: "Reportes",
-          submodulos: [
-            { nombre: 'Reporte ficha', ruta: 'reporte-ficha', icon: 'receipt_long' },
-            { nombre: 'Reporte estado', ruta: 'reporte-estado', icon: 'file_present' },
-            { nombre: 'Reporte tipo', ruta: 'reporte-tipo', icon: 'format_list_numbered' }
-          ]
-        }
-      ]
-    }
-    else if (this.Detalles_Cuenta.permiso == 'evaluator_role') {
-      Modulos = [
-        {
-          modulo: "Tramites",
-          submodulos: [
-            { nombre: 'Tramites internos', ruta: 'tramites-internos', icon: 'text_snippet' }
-
-          ]
-        },
-        {
-          modulo: "Bandejas",
-          submodulos: [
-            { nombre: 'Bandeja entrada', ruta: 'bandeja-entrada', icon: 'mark_as_unread' },
-            { nombre: 'Bandeja salida', ruta: 'bandeja-salida', icon: 'outgoing_mail' },
-          ]
-        },
-        {
-          modulo: "Reportes esternos",
-          submodulos: [
-            { nombre: 'Reporte ficha', ruta: 'reporte-ficha', icon: 'receipt_long' },
-            { nombre: 'Reporte estado', ruta: 'reporte-estado', icon: 'file_present' },
-            { nombre: 'Reporte tipo', ruta: 'reporte-tipo', icon: 'format_list_numbered' }
-          ]
-        }
-      ]
-
-    }
-    return Modulos
-  }
+  
 
 
 }

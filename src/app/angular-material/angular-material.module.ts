@@ -31,6 +31,7 @@ import {CdkAccordionModule} from '@angular/cdk/accordion';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatNativeDateModule} from '@angular/material/core';
 import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatSortModule } from '@angular/material/sort'; 
 
 @NgModule({
   declarations: [
@@ -68,8 +69,8 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
     CdkAccordionModule,
     MatTooltipModule,
     MatDatepickerModule,
-    MatNativeDateModule
-    
+    MatNativeDateModule,
+    MatSortModule
   ]
 })
 export class AngularMaterialModule { }

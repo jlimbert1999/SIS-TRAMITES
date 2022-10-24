@@ -90,25 +90,16 @@ export interface TramiteFichaModel {
 
 export interface TramiteInternoModel_View {
     id_tramite: number
-    id_TipoTramite: number
-    id_representante: number
     id_interno: number
-    id_solicitante: number
-    id_cuenta: number
     estado: string
     alterno: string
-    pin: number
     detalle: string
     cantidad: string
-    activo: boolean
     cite: string
     fecha_creacion: string
-    fecha_finalizacion: string | null,
-    id_requerimientos: string
     numero_correlativo: string
     remitente: string
     cargo_remitente: string
-
     destinatario: string
     cargo_destinatario: string
     titulo: string

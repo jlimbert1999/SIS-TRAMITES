@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import { DialogRemisionComponent } from '../adminitracion-tramites/dialog-remision/dialog-remision.component';
@@ -7,7 +7,9 @@ import { RegistroTramitesService } from '../services/registro-tramites.service';
 import { DialogRegistroInternoComponent } from './dialog-registro-interno/dialog-registro-interno.component';
 import { fadeInOnEnterAnimation } from 'angular-animations';
 import { generar_hoja_ruta_interno } from 'src/app/generacion-pdfs/generacion-pdf';
-import { PaginationService } from '../services/pagination.service';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { catchError, map, merge, startWith, switchMap, of } from 'rxjs';
 
 @Component({
   selector: 'app-administracion-tramites-internos',
@@ -21,31 +23,27 @@ import { PaginationService } from '../services/pagination.service';
 export class AdministracionTramitesInternosComponent implements OnInit {
   Tramites: TramiteInternoModel_View[] = []
   dataSource = new MatTableDataSource();
-  displayedColumns = ["enviado", "alterno", "titulo", "remitente", "destinatario", "estado", "fecha_creacion", "cite", "opciones"]
-
-  Total: number = 0
-  paginator: number = 0
-  items_page: number = 10
-  termino_busqueda: string
+  displayedColumns = ["enviado", "alterno", "titulo", "remitente", "destinatario", "estado", "cite", "fecha_creacion", "opciones"]
   modo_busqueda: boolean = false;
-  carga_spiner = false
+  isLoadingResults = true;
+
   @ViewChild("myInput") private myInput: ElementRef;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   constructor(
     public dialog: MatDialog,
-    public tramiteService: RegistroTramitesService,
-    private paginationService: PaginationService
+    public tramiteService: RegistroTramitesService
   ) { }
-
+ 
   ngOnInit(): void {
-    
+    console.log(this.tramiteService.pageIndex_interno );
     if (this.tramiteService.termino_busqueda !== '') {
       this.buscar_tramite()
     }
-    else {
+    else{
       this.obtener_tramites_interno()
     }
-    
+   
   }
 
   registrar_tramite_interno() {
@@ -56,19 +54,16 @@ export class AdministracionTramitesInternosComponent implements OnInit {
       if (dataDialog) {
         this.Tramites.unshift(dataDialog)
         this.dataSource.data = this.Tramites
-        console.log(dataDialog);
         this.abrir_DialogRemision(dataDialog)
 
       }
     });
   }
   obtener_tramites_interno() {
-    this.carga_spiner = true
-    this.tramiteService.getTramites_internos().subscribe(tramites => {
-      this.Total = tramites.total
-      this.carga_spiner = false
-      this.Tramites = tramites.Tramites
-      this.dataSource.data = this.Tramites
+    this.isLoadingResults = true
+    this.tramiteService.getTramites_internos().subscribe(data => {
+      this.dataSource.data = data
+      this.isLoadingResults = false
     })
   }
   editar_tramite(datosTramite: TramiteInternoModel_View) {
@@ -109,6 +104,7 @@ export class AdministracionTramitesInternosComponent implements OnInit {
 
   buscar_tramite() {
     if (this.tramiteService.termino_busqueda !== '') {
+      this.paginator.pageIndex = 0
       this.tramiteService.buscar_tramite_interno(this.tramiteService.termino_busqueda).subscribe(tramites => {
         this.Tramites = tramites
         this.dataSource.data = this.Tramites
@@ -131,14 +127,8 @@ export class AdministracionTramitesInternosComponent implements OnInit {
   }
 
   cambiar_paginacion(evento: any) {
-    this.tramiteService.items_page = evento.pageSize
-    this.tramiteService.pageIndex = evento.pageIndex
-    if (evento.pageIndex > evento.previousPageIndex) {
-      this.tramiteService.next_page()
-    }
-    else if (evento.pageIndex < evento.previousPageIndex) {
-      this.tramiteService.previus_page()
-    }
+    this.tramiteService.pageIndex_interno = evento.pageIndex
+    this.tramiteService.rows_interno = evento.pageSize
     this.obtener_tramites_interno()
   }
   activar_busqueda() {
@@ -149,3 +139,7 @@ export class AdministracionTramitesInternosComponent implements OnInit {
   }
 
 }
+function observableOf(arg0: null) {
+  throw new Error('Function not implemented.');
+}
+

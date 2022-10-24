@@ -10,6 +10,7 @@ import { TiposTramitesComponent } from '../configuraciones/tipos-tramites/tipos-
 import { UsuariosComponent } from '../configuraciones/usuarios/usuarios.component';
 import { AdminGuard } from '../guards/admin.guard';
 import { AuthGuard } from '../guards/auth.guard';
+import { UserGuard } from '../guards/user.guard';
 import { ReporteEstadoComponent } from '../reportes/reporte-estado/reporte-estado.component';
 import { ReporteFichaComponent } from '../reportes/reporte-ficha/reporte-ficha.component';
 import { ReporteTipoComponent } from '../reportes/reporte-tipo/reporte-tipo.component';
@@ -24,17 +25,17 @@ const routes: Routes = [
     {
         path: 'home', component: HomeComponent, canActivate: [AuthGuard],
         children: [
-            { path: 'usuarios', component: UsuariosComponent, canActivate: [AdminGuard] },
-            { path: 'cuentas', component: CuentasComponent, canActivate: [AdminGuard] },
-            { path: 'cargos', component: CargosComponent, canActivate: [AdminGuard] },
-            { path: 'dependencias', component: DependenciasComponent, canActivate: [AdminGuard] },
-            { path: 'instituciones', component: InstitucionesComponent, canActivate: [AdminGuard] },
-            { path: 'documentos', component: DocumentosComponent, canActivate: [AdminGuard] },
-            { path: 'tipos', component: TiposTramitesComponent, canActivate: [AdminGuard] },
+            { path: 'usuarios', component: UsuariosComponent, canActivate: [UserGuard], data: { expectedRole: 'admin_role' } },
+            { path: 'cuentas', component: CuentasComponent, canActivate: [UserGuard], data: { expectedRole: 'admin_role' } },
+            { path: 'cargos', component: CargosComponent, canActivate: [UserGuard], data: { expectedRole: 'admin_role' } },
+            { path: 'dependencias', component: DependenciasComponent, canActivate: [UserGuard], data: { expectedRole: 'admin_role' } },
+            { path: 'instituciones', component: InstitucionesComponent, canActivate: [UserGuard], data: { expectedRole: 'admin_role' } },
+            { path: 'documentos', component: DocumentosComponent, canActivate: [UserGuard], data: { expectedRole: 'admin_role' } },
+            { path: 'tipos', component: TiposTramitesComponent, canActivate: [UserGuard], data: { expectedRole: 'admin_role' } },
 
 
-            { path: 'tramites', component: AdminitracionTramitesComponent },
-            { path: 'tramites/ficha/:id', component: FichaTramiteComponent },
+            { path: 'tramites', component: AdminitracionTramitesComponent, canActivate: [UserGuard], data: { expectedRole: 'receptionist_role' } },
+            { path: 'tramites/ficha/:id', component: FichaTramiteComponent, canActivate: [UserGuard], data: { expectedRole: 'receptionist_role' } },
 
             { path: 'tramites-internos', component: AdministracionTramitesInternosComponent },
             { path: 'tramites-internos/ficha/:id', component: FichaTramiteComponent },

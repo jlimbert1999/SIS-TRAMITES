@@ -34,8 +34,13 @@ export class LoginComponent implements OnInit {
       return
     }
 
-    this.loginService.login(this.loginForm.value!, this.loginForm.get('remember')?.value!).subscribe((resp: boolean) => {
-      this.router.navigateByUrl('/')
+    this.loginService.login(this.loginForm.value!, this.loginForm.get('remember')?.value!).subscribe(permiso=>{
+      if(permiso==="admin_rol"){
+        this.router.navigate(['/home'])
+      }
+      else{
+        this.router.navigate(['/home', 'tramites-internos'])
+      }
     })
   }
 

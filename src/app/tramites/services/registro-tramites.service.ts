@@ -9,11 +9,16 @@ const base_url = environment.base_url
   providedIn: 'root'
 })
 export class RegistroTramitesService {
+  pageIndex_interno:number=0
+  rows_interno:number=5
+  pageIndex_externo:number=0
+  rows_externo:number=5
 
   items_page: number = 10
   paginator: number = 0
   termino_busqueda: string = ""
   modo_busqueda: boolean = false
+  dataSize:number
   public pageIndex: number
 
 
@@ -98,8 +103,9 @@ export class RegistroTramitesService {
 
   // MANEJO DE TRAMITES INTERENOS
   getTramites_internos() {
-    return this.http.get<{ ok: boolean, Tramites: TramiteInternoModel_View[], total: number }>(`${base_url}/tramites/internos?desde=${this.paginator}&filas=${this.items_page}`).pipe(map(resp => {
-      return { Tramites: resp.Tramites, total: resp.total }
+    return this.http.get<{ ok: boolean, Tramites: TramiteInternoModel_View[], total: number }>(`${base_url}/tramites/internos?pageIndex=${this.pageIndex_interno}&rows=${this.rows_interno}`).pipe(map(resp=>{
+      this.dataSize=resp.total
+      return resp.Tramites
     }))
   }
   getInterno(id_interno: number) {
@@ -122,7 +128,11 @@ export class RegistroTramitesService {
       }))
   }
   buscar_tramite_interno(termino: string) {
-    return this.http.get<{ ok: boolean, tramites: TramiteInternoModel_View[] }>(`${base_url}/tramites/internos/busqueda/${termino}`).pipe(map(resp => resp.tramites))
+    return this.http.get<{ ok: boolean, tramites: TramiteInternoModel_View[], total:number }>(`${base_url}/tramites/internos/busqueda/${termino}`).pipe(map(resp => {
+      console.log(resp);
+      this.dataSize=resp.total
+      return resp.tramites
+    }))
 
   }
   obtener_hoja_ruta(id_tramite: number, tipo: 'interno' | 'externo') {
