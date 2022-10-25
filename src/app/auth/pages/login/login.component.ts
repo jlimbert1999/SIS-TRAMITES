@@ -8,7 +8,7 @@ import { fadeInDownOnEnterAnimation } from 'angular-animations';
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
-  animations:[
+  animations: [
     fadeInDownOnEnterAnimation()
   ]
 })
@@ -34,11 +34,11 @@ export class LoginComponent implements OnInit {
       return
     }
 
-    this.loginService.login(this.loginForm.value!, this.loginForm.get('remember')?.value!).subscribe(permiso=>{
-      if(permiso==="admin_rol"){
+    this.loginService.login(this.loginForm.value!, this.loginForm.get('remember')?.value!).subscribe(permiso => {
+      if (permiso === "admin_role") {
         this.router.navigate(['/home'])
       }
-      else{
+      else {
         this.router.navigate(['/home', 'tramites-internos'])
       }
     })

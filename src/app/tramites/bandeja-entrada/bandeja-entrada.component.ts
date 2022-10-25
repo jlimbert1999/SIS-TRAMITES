@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { LoginService } from 'src/app/auth/services/login.service';
 import { SocketService } from 'src/app/auth/services/socket.service';
@@ -12,6 +12,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { ToastrService } from 'ngx-toastr';
 import { fadeInOnEnterAnimation } from 'angular-animations';
 import { RegistroTramitesService } from '../services/registro-tramites.service';
+import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-bandeja-entrada',
@@ -28,26 +29,21 @@ import { RegistroTramitesService } from '../services/registro-tramites.service';
 })
 export class BandejaEntradaComponent implements OnInit {
 
-  spiner_carga: boolean = false
-
   Tramites_Recibidos: BandejaEntradaModel_View[] = []
-  modo_busqueda: boolean = false
   displayedColumns: string[] = ['interno', 'alterno', 'titulo', 'emisor', 'estado', 'fecha', 'opciones']
 
   dataSource = new MatTableDataSource();
-  Total: number = 0
-  paginator: number = 0
-  items_page: number = 10
-  cargando: boolean = false
-  termino_busqueda: string = ""
+
 
   columnsToDisplayWithExpand = [...this.displayedColumns, 'expand'];
   expandedElement: any | null;
 
+  @ViewChild("myInput") private myInput: ElementRef;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
+  isLoadingResults = true;
 
-
-  constructor(private loginService: LoginService, private socketService: SocketService, private bandejaService: BandejaService, private workflowService: WorkflowService, private dialog: MatDialog, private registrTramiteService: RegistroTramitesService) {
+  constructor(private loginService: LoginService, private socketService: SocketService, public bandejaService: BandejaService, private workflowService: WorkflowService, private dialog: MatDialog, private registrTramiteService: RegistroTramitesService) {
   }
 
   ngOnInit(): void {
@@ -61,30 +57,41 @@ export class BandejaEntradaComponent implements OnInit {
 
   recibir_tramite() {
     this.socketService.Escuchar('recibir_tramite').subscribe((mail: any) => {
-      console.log(mail);
       this.Tramites_Recibidos.unshift(mail)
-      if (this.Tramites_Recibidos.length > this.items_page) {
+      if (this.Tramites_Recibidos.length > this.bandejaService.dataSize) {
         this.Tramites_Recibidos.pop()
       }
       this.dataSource.data = this.Tramites_Recibidos
     })
   }
   obtener_tramitesRecibidos() {
-    this.spiner_carga = true
-    this.Tramites_Recibidos = []
-    this.bandejaService.getBandejaEntrada(this.paginator, this.items_page).subscribe(bandeja => {
-      this.spiner_carga = false
-      this.Tramites_Recibidos = bandeja.bandeja
-      this.Total = bandeja.total
-      this.dataSource.data = this.Tramites_Recibidos
-    })
+    this.isLoadingResults = true
+    if (this.bandejaService.termino_busqueda_mailIn !== "") {
+      this.bandejaService.searchBandejaEntrada().subscribe(data => {
+        this.Tramites_Recibidos = data
+        this.dataSource.data = this.Tramites_Recibidos
+        this.isLoadingResults = false
+      })
+    }
+    else {
+      this.bandejaService.getBandejaEntrada().subscribe(data => {
+        this.Tramites_Recibidos = data
+        this.dataSource.data = this.Tramites_Recibidos
+        this.paginator.pageIndex = this.bandejaService.pageIndex_mailIn
+        this.isLoadingResults = false
+      })
+    }
+
   }
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
+  applyFilter() {
+    if (this.bandejaService.termino_busqueda_mailIn !== '') {
+      this.bandejaService.pageIndex_mailIn = 0
+      this.bandejaService.searchBandejaEntrada().subscribe(data => {
+        this.Tramites_Recibidos = data
+        this.dataSource.data = this.Tramites_Recibidos
+        this.paginator.pageIndex = 0
+      })
     }
   }
 
@@ -92,13 +99,6 @@ export class BandejaEntradaComponent implements OnInit {
 
   recargar() {
     this.obtener_tramitesRecibidos()
-  }
-  activar_busqueda() {
-    this.modo_busqueda = true
-  }
-  desactivar_busqueda() {
-    this.modo_busqueda = false
-    this.dataSource.filter = ""
   }
 
 
@@ -194,19 +194,22 @@ export class BandejaEntradaComponent implements OnInit {
 
 
   cambiar_paginacion(evento: any) {
-    this.items_page = evento.pageSize
-    if (evento.pageIndex > evento.previousPageIndex) {
-      this.paginator = this.paginator + 5
-    }
-    else if (evento.pageIndex < evento.previousPageIndex) {
-      this.paginator = this.paginator - 5
-      if (this.paginator < 0) {
-        this.paginator = 0
-      }
-    }
+    this.bandejaService.pageIndex_mailIn = evento.pageIndex
+    this.bandejaService.rows_mailIn = evento.pageSize
     this.obtener_tramitesRecibidos()
   }
-
+  activar_busqueda() {
+    this.bandejaService.modo_busqueda_mailIn = true
+    setTimeout(() => {
+      this.myInput.nativeElement.focus()
+    })
+  }
+  desactivar_busqueda() {
+    this.bandejaService.termino_busqueda_mailIn = ""
+    this.bandejaService.modo_busqueda_mailIn = false
+    this.bandejaService.pageIndex_mailIn = 0
+    this.obtener_tramitesRecibidos()
+  }
 
 
 }

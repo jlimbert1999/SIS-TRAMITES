@@ -11,6 +11,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { catchError, map, merge, startWith, switchMap, of } from 'rxjs';
 
+
 @Component({
   selector: 'app-administracion-tramites-internos',
   templateUrl: './administracion-tramites-internos.component.html',
@@ -24,7 +25,6 @@ export class AdministracionTramitesInternosComponent implements OnInit {
   Tramites: TramiteInternoModel_View[] = []
   dataSource = new MatTableDataSource();
   displayedColumns = ["enviado", "alterno", "titulo", "remitente", "destinatario", "estado", "cite", "fecha_creacion", "opciones"]
-  modo_busqueda: boolean = false;
   isLoadingResults = true;
 
   @ViewChild("myInput") private myInput: ElementRef;
@@ -34,38 +34,50 @@ export class AdministracionTramitesInternosComponent implements OnInit {
     public dialog: MatDialog,
     public tramiteService: RegistroTramitesService
   ) { }
- 
+
   ngOnInit(): void {
-    console.log(this.tramiteService.pageIndex_interno );
-    if (this.tramiteService.termino_busqueda !== '') {
-      this.buscar_tramite()
+    this.obtener_tramites_interno()
+  }
+
+  obtener_tramites_interno() {
+    this.isLoadingResults = true
+    if (this.tramiteService.termino_busqueda !== "") {
+      this.tramiteService.buscar_tramite_interno().subscribe(tramites => {
+        this.Tramites = tramites
+        this.dataSource.data = this.Tramites
+        this.isLoadingResults = false
+      })
     }
-    else{
-      this.obtener_tramites_interno()
+    else {
+      this.tramiteService.getTramites_internos().subscribe(data => {
+        this.Tramites = data
+        this.dataSource.data = this.Tramites
+        this.paginator.pageIndex = this.tramiteService.pageIndex_interno
+        this.isLoadingResults = false
+      })
     }
-   
+
   }
 
   registrar_tramite_interno() {
     const dialogRef = this.dialog.open(DialogRegistroInternoComponent, {
-      width: '900px'
+      width: '900px',
+      disableClose:true
     });
     dialogRef.afterClosed().subscribe((dataDialog: any) => {
       if (dataDialog) {
         this.Tramites.unshift(dataDialog)
+        this.tramiteService.dataSize = this.tramiteService.dataSize + 1
+        if (this.Tramites.length > this.tramiteService.rows_interno) {
+          this.Tramites.pop()
+        }
         this.dataSource.data = this.Tramites
         this.abrir_DialogRemision(dataDialog)
 
       }
     });
   }
-  obtener_tramites_interno() {
-    this.isLoadingResults = true
-    this.tramiteService.getTramites_internos().subscribe(data => {
-      this.dataSource.data = data
-      this.isLoadingResults = false
-    })
-  }
+
   editar_tramite(datosTramite: TramiteInternoModel_View) {
     const dialogRef = this.dialog.open(DialogRegistroInternoComponent, {
       data: datosTramite,
@@ -104,26 +116,21 @@ export class AdministracionTramitesInternosComponent implements OnInit {
 
   buscar_tramite() {
     if (this.tramiteService.termino_busqueda !== '') {
-      this.paginator.pageIndex = 0
-      this.tramiteService.buscar_tramite_interno(this.tramiteService.termino_busqueda).subscribe(tramites => {
+      this.tramiteService.pageIndex_interno = 0
+      this.tramiteService.buscar_tramite_interno().subscribe(tramites => {
         this.Tramites = tramites
         this.dataSource.data = this.Tramites
+        // poner la paginacion en cero visualmente
+        this.paginator.pageIndex = 0
       })
     }
-
   }
 
-  desactivar_busqueda() {
-    this.tramiteService.termino_busqueda = ""
-    this.tramiteService.modo_busqueda = false
-    this.obtener_tramites_interno()
-  }
 
   generar_hoja_ruta(Tramite: TramiteInternoModel_View) {
     this.tramiteService.obtener_hoja_ruta(Tramite.id_tramite, 'interno').subscribe(data => {
       generar_hoja_ruta_interno(data.tramite, data.fecha_generacion)
     })
-
   }
 
   cambiar_paginacion(evento: any) {
@@ -137,9 +144,13 @@ export class AdministracionTramitesInternosComponent implements OnInit {
       this.myInput.nativeElement.focus()
     })
   }
+  desactivar_busqueda() {
+    this.tramiteService.termino_busqueda = ""
+    this.tramiteService.modo_busqueda = false
+    this.tramiteService.pageIndex_interno = 0
+    this.obtener_tramites_interno()
+  }
 
 }
-function observableOf(arg0: null) {
-  throw new Error('Function not implemented.');
-}
+
 

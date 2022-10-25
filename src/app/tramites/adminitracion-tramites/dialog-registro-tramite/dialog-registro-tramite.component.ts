@@ -15,11 +15,8 @@ import { LoginService } from 'src/app/auth/services/login.service';
   styleUrls: ['./dialog-registro-tramite.component.css']
 })
 export class DialogRegistroTramiteComponent implements OnInit {
-
-  selectedIndex: number = 0
-
-  lista_TiposTramites: { id_TipoTramite: number, segmento: string, sigla: string, titulo: string }[] = []
-  lista_tramites_segmentados: any[] = []
+  lista_TiposTramites: TipoTramiteModel[] = []
+  lista_tramites_segmentados: TipoTramiteModel[] = []
   lista_Requerimientos: RequerimientosModel[] = []
   elemento_tabla: any  //objeto que se envira a la tabla para agregarlo
 
@@ -37,7 +34,6 @@ export class DialogRegistroTramiteComponent implements OnInit {
   ]
 
   solicitante: SolicitanteModel
-  tramite: Tramite_Model
   representante: RepresentanteModel
   Ids_requisitos_presentados: number[] = []
   regis_Representante: boolean = false
@@ -80,42 +76,51 @@ export class DialogRegistroTramiteComponent implements OnInit {
   ngOnInit(): void {
     this.iniciar_form_Tramite()
     this.iniciar_form_Solicitante_Natural()
-    if (Object.keys(this.data).length == 0) {
+    if (!this.data) {
       this.tituloDialog = "Nuevo";
-      this.obtener_TiposTramites()
+      this.regitroTramiteService.getTipos_Tramites(true).subscribe(tipos => {
+        tipos.forEach(element => {
+          if (!this.Segmentos.includes(element.segmento)) {
+            this.Segmentos.push(element.segmento)
+          }
+        });
+        this.lista_TiposTramites = tipos
+      })
 
     }
     else {
       this.tituloDialog = "Edicion";
-      this.cargar_Inputs()
+      this.TramiteFormGroup = this._formBuilder.group({
+        cantidad: ['', [Validators.required, Validators.min(0)]],
+        detalle: ['', Validators.required],
+    
+        cite: ['']
+      });
+      this.TramiteFormGroup.patchValue(this.data)
+
+      this.obtener_Requerimientos_Tramite(this.data.id_TipoTramite)
+      
+      if (this.data.id_requerimientos) {
+        this.Ids_requisitos_presentados = this.data.id_requerimientos.split(',').map(Number)
+      }
+      this.obtener_Solicitante_Representante(this.data.id_solicitante, this.data.id_representante)
     }
   }
-  obtener_TiposTramites() {
-    this.regitroTramiteService.getTipos_Tramites(true).subscribe(tipos => {
-      tipos.forEach((element: any) => {
-        if (!this.Segmentos.includes(element.segmento)) {
-          this.Segmentos.push(element.segmento)
-        }
-      });
-      this.lista_TiposTramites = tipos
-    })
-  }
+
   seleccionar_segmento_tramite(tipo: string) {
     this.lista_Requerimientos = []
-    this.lista_tramites_segmentados = this.lista_TiposTramites.filter((tipo_tramite: any) => tipo_tramite.segmento == tipo)
+    this.lista_tramites_segmentados = this.lista_TiposTramites.filter(tipo_tramite => tipo_tramite.segmento == tipo)
   }
   seleccionar_TipoTramite(tipoTramite: TipoTramiteModel) {
     this.Detalle_tramite.codigo_alterno = tipoTramite.sigla
     this.Detalle_tramite.titulo = tipoTramite.titulo
-    this.obtener_Requerimientos_Tramite(tipoTramite.id_TipoTramite)
+    this.obtener_Requerimientos_Tramite(tipoTramite.id_TipoTramite!)
   }
-  obtener_Requerimientos_Tramite(id_TipoTramite: any) {
+  obtener_Requerimientos_Tramite(id_TipoTramite: number) {
     this.spiner_carga = true
-    this.tiposTramiteService.getRequerimientos_Habilitados(id_TipoTramite).subscribe((resp: any) => {
-      if (resp.ok) {
-        this.spiner_carga = false
-        this.lista_Requerimientos = resp.Requerimientos
-      }
+    this.tiposTramiteService.getRequerimientos_Habilitados(id_TipoTramite).subscribe(data => {
+      this.spiner_carga = false
+      this.lista_Requerimientos = data
     })
   }
 
@@ -132,7 +137,6 @@ export class DialogRegistroTramiteComponent implements OnInit {
       this.TramiteFormGroup.controls['id_TipoTramite'].value,
       this.TramiteFormGroup.controls['detalle'].value,
       this.TramiteFormGroup.controls['cantidad'].value,
-      this.Info_cuenta_actual.id_cuenta,
       `${this.Detalle_tramite.codigo_alterno.toLocaleUpperCase()}-${this.Info_cuenta_actual.sigla}`,
       this.Ids_requisitos_presentados.toString(),
       this.TramiteFormGroup.controls['cite'].value
@@ -145,7 +149,6 @@ export class DialogRegistroTramiteComponent implements OnInit {
     }
     else {
       solicitud = { tramite: tramite, solicitante: this.solicitante, representante: null, interno: null }
-
     }
 
     this.regitroTramiteService.addTramite(solicitud)
@@ -359,13 +362,7 @@ export class DialogRegistroTramiteComponent implements OnInit {
     });
   }
   cargar_Inputs() {
-    this.TramiteFormGroup.patchValue(this.data)
-    this.tramite = this.data
-    this.obtener_Requerimientos_Tramite(this.data.id_TipoTramite)
-    if (this.data.id_requerimientos) {
-      this.Ids_requisitos_presentados = this.data.id_requerimientos.split(',').map(Number)
-    }
-    this.obtener_Solicitante_Representante(this.data.id_solicitante, this.data.id_representante)
+
   }
 
   habilitar_representante(valor: boolean) {

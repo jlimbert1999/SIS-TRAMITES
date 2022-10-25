@@ -14,7 +14,9 @@ export class TiposTramitesService {
   constructor(private http: HttpClient) { }
 
   getRequerimientos_Habilitados(id_TipoTramite: number) {
-    return this.http.get(`${base_url}/tramites/requisitos/${id_TipoTramite}`)
+    return this.http.get<{ ok: boolean, Requerimientos: RequerimientosModel[] }>(`${base_url}/tramites/requisitos/${id_TipoTramite}`).pipe(
+      map(resp => resp.Requerimientos)
+    )
   }
   // NUEVOS
   getTipos(desde: number, filas: number = 10) {
@@ -45,8 +47,8 @@ export class TiposTramitesService {
     return this.http.put(`${base_url}/tipos/requerimiento/${id_requerimiento}`, requerimiento)
   }
 
-  searchTiposTramites(termino:string) {
-    return this.http.get<{ ok: boolean, tipos: TipoTramiteModel[]}>(`${base_url}/tipos/busqueda/${termino}`)
+  searchTiposTramites(termino: string) {
+    return this.http.get<{ ok: boolean, tipos: TipoTramiteModel[] }>(`${base_url}/tipos/busqueda/${termino}`)
       .pipe(map(resp => {
         return resp.tipos
       }))

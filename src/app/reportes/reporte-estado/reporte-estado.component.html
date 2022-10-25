@@ -16,14 +16,7 @@
 
     <div class="row p-4">
         <div class="col-12 col-md-4">
-            <div class="mb-3">
-                <label for="select">Seleccione el tipo de tramite</label>
-                <select #txt_estado id='select' class="form-select" aria-label="Default select example">
-                    <option *ngFor="let item of estados_tramite" [value]="item">{{item}}</option>
-                </select>
-
-            </div>
-            <label for="select">Seleccione el estado del tramite</label>
+            <label for="select">Seleccione el tipo de tramite</label>
             <div class="mb-3">
                 <select [(ngModel)]="tipo_reporte" #txt_tipo id='select' class="form-select"
                     aria-label="Default select example">
@@ -32,6 +25,14 @@
                 </select>
 
             </div>
+            <div class="mb-3">
+                <label for="select">Seleccione el estado del tramite</label>
+                <select #txt_estado id='select' class="form-select" aria-label="Default select example">
+                    <option *ngFor="let item of estados_tramite" [value]="item">{{item}}</option>
+                </select>
+
+            </div>
+           
 
 
             <div class="mb-3">

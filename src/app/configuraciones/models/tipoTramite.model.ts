@@ -4,7 +4,7 @@ export interface TipoTramiteModel {
     sigla: string
     segmento: string
     activo?: boolean,
-    externo: boolean
+    externo?: boolean
 }
 
 export interface RequerimientosModel {

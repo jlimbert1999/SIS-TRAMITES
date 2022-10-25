@@ -41,9 +41,12 @@ export class LoginService {
   }
 
   manejoErrores(error: HttpErrorResponse) {
-    console.log('Error peticion', error);
+    console.log('Error peticion', error.status);
     if (error.status == 404) {
       Swal.fire('Solictud incorrecta ', 'No se econtro la ruta solicitada', 'error')
+    }
+    else if (error.status == 400) {
+      this.router.navigate(['/login'])
     }
     else if (error.status == 401) {
       Swal.fire('error', error.error.message, 'error')
@@ -58,12 +61,10 @@ export class LoginService {
     else {
       localStorage.removeItem('login')
     }
-    return this.http.post<{ ok: boolean, token: string, permiso: string }>(`${base_url}/cuentas/login`, formData).pipe(tap(
-      (res: any) => {
+    return this.http.post<{ ok: boolean, token: string, permiso: string }>(`${base_url}/cuentas/login`, formData).pipe(map(
+      res => {
         localStorage.setItem('token', res.token)
         return res.permiso
-      }, (error) => {
-        Swal.fire('Error ingreso', error.error.message, 'error')
       }
     ))
   }

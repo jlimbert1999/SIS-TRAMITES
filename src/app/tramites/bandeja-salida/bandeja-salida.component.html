@@ -1,25 +1,25 @@
 <p>
     <mat-toolbar class="example-toolbar">
-        <ng-container *ngIf="modo_busqueda==false">
-            <span>Bandeja salida</span>
+        <ng-container *ngIf="!bandejaService.modo_busqueda_mailOut">
+            <span style="font-size: 17px;">BANDEJA SALIDA</span>
             <span class="example-spacer"></span>
             <button (click)="recargar()" matTooltip="Recargar" mat-icon-button class="example-icon favorite-icon"
                 aria-label="Example icon-button with heart icon">
                 <mat-icon>autorenew</mat-icon>
             </button>
 
-            <ng-container *ngIf="Tramites_Emitidos.length>0">
-                <button (click)="modo_busqueda=true" matTooltip="Busqueda" mat-icon-button
+            <ng-container>
+                <button (click)="activar_busqueda()" matTooltip="Busqueda" mat-icon-button
                     class="example-icon favorite-icon" aria-label="Example icon-button with heart icon">
                     <mat-icon>search</mat-icon>
                 </button>
             </ng-container>
         </ng-container>
-
-        <mat-form-field *ngIf="modo_busqueda==true" floatLabel="never" style="width: 100%;">
-            <mat-label>Buscar</mat-label>
-            <input matInput type="text" #txt_busqueda (keyup)="applyFilter($event)">
-            <button matSuffix mat-icon-button aria-label="Clear" (click)="txt_busqueda.value=''; desactivar_busqueda()">
+        <mat-form-field *ngIf="bandejaService.modo_busqueda_mailOut" floatLabel="never">
+            <mat-label>Ingrese el alterno, cite o destinatario</mat-label>
+            <input [(ngModel)]="bandejaService.termino_busqueda_mailOut" matInput type="search" #myInput
+                (keyup.enter)="applyFilter()">
+            <button matSuffix mat-icon-button aria-label="Clear" (click)="desactivar_busqueda()">
                 <mat-icon>close</mat-icon>
             </button>
         </mat-form-field>
@@ -28,7 +28,7 @@
 
 
 
-
+<!-- 
 <div class="container-fluid" [@fadeInOnEnter]>
     <div *ngIf="!spiner_carga &&  dataSource.data.length==0" class="alert alert-info position-relative" role="alert">
         <mat-icon>outgoing_mail</mat-icon>
@@ -137,7 +137,7 @@
             </td>
         </ng-container>
 
-        <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+      
         <ng-container matColumnDef="expandedDetail">
             <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplayWithExpand.length">
                 <div class="example-element-detail"
@@ -194,4 +194,188 @@
 
 
 
+</div> -->
+
+<div class="container-fluid" [@fadeInOnEnter]>
+    <div *ngIf="!isLoadingResults && dataSource.data.length==0" class="alert alert-primary" role="alert">
+        Usted no ha enviado ningun tramite
+    </div>
+
+    <div class="example-container mat-elevation-z8">
+        <div class="example-loading-shade" *ngIf="isLoadingResults">
+            <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
+        </div>
+
+        <div *ngIf="dataSource.data.length>0" class="example-table-container">
+            <table mat-table [dataSource]="dataSource" [class.isMobile]="'isMobile'" class="example-table" matSort
+                matSortActive="created" multiTemplateDataRows>
+                <ng-container matColumnDef="externo">
+                    <th mat-header-cell *matHeaderCellDef>Tipo</th>
+                    <td mat-cell *matCellDef="let element">
+                        <span *ngIf="!element.externo" style="color: #3A86FF;">
+                            <mat-icon>
+                                radio_button_checked
+                            </mat-icon>
+                            Interno
+                        </span>
+                        <span *ngIf="element.externo" style="color: #05668D;">
+                            <mat-icon>
+                                circle
+                            </mat-icon>
+                            Externo
+                        </span>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="titulo">
+                    <th mat-header-cell *matHeaderCellDef>Tramite</th>
+                    <td mat-cell *matCellDef="let element" class='m-card-title'> {{element.titulo}} </td>
+                </ng-container>
+
+
+                <ng-container matColumnDef="alterno">
+                    <th mat-header-cell *matHeaderCellDef> Alterno </th>
+                    <td mat-cell *matCellDef="let element" class='m-card-sub-title'>
+                        <a [routerLink]="['ficha',element.id_tramite ]">
+                            {{element.alterno}}
+                        </a>
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="emisor">
+                    <th mat-header-cell *matHeaderCellDef> Enviado a: </th>
+                    <td mat-cell *matCellDef="let element" class='has_label_on_mobile'>
+                        <div class="content">
+                            <img class="img_user" src="../../../assets/img/user.png">
+                            <div class="text">
+                                <h4><strong>{{element.funcionario_receptor|titlecase}}</strong></h4>
+                                <small>{{element.cargo|uppercase|slice:0:35}}..</small>
+                            </div>
+                        </div>
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="estado">
+                    <th mat-header-cell *matHeaderCellDef>Estado</th>
+                    <td mat-cell *matCellDef="let element" class='has_label_on_mobile'>
+                        <span style="font-size: 11px;" class="badge" [ngClass]="[
+                    element.estado=='Inscrito'?'text-bg-primary':'',
+                    element.estado=='En revision'?'text-bg-secondary':'',
+                    element.estado=='Observado'?'text-bg-warning':'',
+                    element.estado=='Concluido'?'text-bg-dark':'',
+                    ]">
+                            {{element.estado}}
+                        </span>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="fecha_envio">
+                    <th mat-header-cell *matHeaderCellDef>Fecha envio</th>
+                    <td mat-cell *matCellDef="let element" class='has_label_on_mobile'>
+                        {{element.fecha_envio|date:'short'}}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="situacion">
+                    <th mat-header-cell *matHeaderCellDef>Situacion</th>
+                    <td mat-cell *matCellDef="let element">
+                        <strong style="color: orange" *ngIf="element.aceptado==null">Enviado</strong>
+                        <strong style="color: green;" *ngIf="element.aceptado==true">Recibido</strong>
+                        <strong style="color: red;"
+                            *ngIf="element.aceptado==false && element.reenviado==false">Rechazado</strong>
+                        <strong style="color: cornflowerblue;"
+                            *ngIf="element.aceptado==false && element.reenviado==true">Reenviado</strong>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="opciones">
+                    <th mat-header-cell *matHeaderCellDef> </th>
+                    <td mat-cell *matCellDef="let element">
+                        <button mat-icon-button [matMenuTriggerFor]="menu">
+                            <mat-icon>more_vert</mat-icon>
+                        </button>
+                        <mat-menu #menu="matMenu" xPosition="before">
+                            <button *ngIf="element.aceptado==false && element.reenviado==false" mat-menu-item
+                                (click)="reenviar_tramite(element)">
+                                <mat-icon>send</mat-icon>
+                                <span>Reenviar tramite</span>
+                            </button>
+                            <button mat-menu-item *ngIf="permisos=='receptionist_role'"
+                                (click)="crear_hoja_ruta(element)">
+                                <mat-icon>summarize</mat-icon>
+                                <span>Hoja de ruta</span>
+                            </button>
+                        </mat-menu>
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="expand">
+                    <th mat-header-cell *matHeaderCellDef aria-label="row actions">&nbsp;</th>
+                    <td mat-cell *matCellDef="let element">
+                        <button mat-icon-button aria-label="expand row"
+                            (click)="(expandedElement = expandedElement === element ? null : element); $event.stopPropagation()">
+                            <mat-icon *ngIf="expandedElement !== element">keyboard_arrow_down</mat-icon>
+                            <mat-icon *ngIf="expandedElement === element">keyboard_arrow_up</mat-icon>
+                        </button>
+                    </td>
+                </ng-container>
+
+
+                <ng-container matColumnDef="expandedDetail">
+                    <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplayWithExpand.length">
+                        <div class="example-element-detail"
+                            [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+
+                            <div class="example-element-description" style="width: 100%;">
+
+                                <p><strong>ENVIADO EL: </strong> {{element.fecha_envio | date:'medium'}}</p>
+                                <p><strong>REFERENCIA: </strong> {{element.detalle}}</p>
+                                <p *ngIf="element.aceptado==true && element.reenviado==false">
+                                    <strong>RECIBIDO EL: </strong> {{element.fecha_recibido | date:'medium'}}
+                                </p>
+                                <div style="color: red;" *ngIf="element.aceptado==false && element.reenviado==false">
+                                    <p>
+                                        <strong>RECHAZADO EL: </strong> {{element.fecha_recibido | date:'medium'}}
+                                    </p>
+                                    <p>
+                                        <strong>MOTIVO: </strong>{{element.motivo|uppercase}}
+                                    </p>
+                                </div>
+
+                                <div *ngIf="element.aceptado==null && element.reenviado==false">
+                                    <p>EL TRAMITE AUN NO FUE RECIBIDO</p>
+                                </div>
+
+                                <div *ngIf="element.aceptado==false && element['reenviado']==true">
+                                    <p>
+                                        <strong>RECHAZADO EL: </strong> {{element.fecha_recibido | date:'medium'}}
+                                    </p>
+                                    <p>
+                                        <strong>MOTIVO: </strong>{{element.motivo|uppercase}}
+                                    </p>
+                                    <p>
+                                        EL TRAMITE FUE REENVIADO
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+                    </td>
+                </ng-container>
+
+                <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell" colspan="4">No se encontraron registros</td>
+                </tr>
+                <tr mat-header-row *matHeaderRowDef="columnsToDisplayWithExpand"></tr>
+                <tr mat-row *matRowDef="let element; columns: columnsToDisplayWithExpand;" class="example-element-row"
+                    [class.example-expanded-row]="expandedElement === element"
+                    (click)="expandedElement = expandedElement === element ? null : element">
+                </tr>
+                <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
+            </table>
+        </div>
+
+        <mat-paginator (page)="cambiar_paginacion($event)" [length]="bandejaService.dataSize"
+            [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons></mat-paginator>
+    </div>
 </div>

@@ -25,16 +25,14 @@ td.mat-column-opciones {
     width: 100%;
 }
 
-.mat-icon {
-    color: #3e75ff;
-}
 
-@media screen and (max-width: 960px) {
+
+@media screen and (max-width: 800px) {
     .mat-elevation-z8 {
         background: transparent;
         box-shadow: none;
     }
-
+   
     .mat-header-row {
         display: none;
     }
@@ -89,15 +87,17 @@ td.mat-column-opciones {
     }
 
     .mat-table .mat-cell.m-card-sub-title {
-        margin-top: -8px;
+        margin-top: 8px;
         padding: 0 48px 0 16px;
         color: rgba(0, 0, 0, 0.54);
+        font-size: 18px;
     }
 
     .mat-table .has_label_on_mobile:before {
         content: attr(data-label);
         display: inline;
-        font-weight: normal;
+        font-weight: bold;
+
     }
 
     .mat-table .mat-column-opciones {
@@ -116,6 +116,19 @@ td.mat-column-opciones {
     .mat-paginator {
         margin-top: 24px;
     }
+
+    .mat-table .mat-column-enviado  {
+        display: none;
+    }
+    .mat-table .mat-column-remitente {
+        display: none;
+    }
+    .mat-table .mat-column-cite {
+        display: none;
+    }
+    .mat-table .mat-column-fecha_creacion {
+        display: none;
+    }
 }
 
 /* Structure */
@@ -125,8 +138,7 @@ td.mat-column-opciones {
 
 .example-table-container {
     position: relative;
-    min-height: 200px;
-    max-height: 400px;
+    height: calc( 100vh - 250px);
     overflow: auto;
 }
 

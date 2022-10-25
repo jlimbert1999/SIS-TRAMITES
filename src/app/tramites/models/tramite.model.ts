@@ -16,7 +16,7 @@ export class Tramite_Model {
     id_solicitante: any
     id_representante: any
     id_interno: any
-    id_requerimientos: string | null
+    id_requerimientos: string
     cite: string
 
 
@@ -24,40 +24,38 @@ export class Tramite_Model {
         id_TipoTramite: number,
         detalle: string,
         cantidad: string,
-        id_cuenta: number,
         alterno: string,
-        id_requerimientos: string | null,
+        id_requerimientos: string | "",
         cite: string
     ) {
         this.id_TipoTramite = id_TipoTramite
         this.estado = "Inscrito"
         this.alterno = alterno
         this.pin = Math.floor(1000 + Math.random() * 90000);
-        this.detalle = detalle
+        this.detalle = detalle.toUpperCase()
         this.cantidad = cantidad
         this.activo = true
-        this.id_cuenta = id_cuenta
-        this.fecha_creacion = (new Date(Date.now() - ((new Date()).getTimezoneOffset() * 60000))).toISOString().slice(0, 19).replace('T', ' ')
         this.fecha_finalizacion = null
         this.id_interno = null
         this.id_solicitante = null
         this.id_representante = null
         this.id_requerimientos = id_requerimientos
-        this.cite = cite
+        this.cite = cite.toUpperCase()
     }
 }
 export interface TramiteModel_View {
     fecha_creacion: number
     alterno: string
     dni: number
-    documento: string
     pin: number
+    cite:string 
+    cantidad:string
+    detalle:string
     enviado: boolean
     estado: string
     expedido: string
     id_representante: number
     id_solicitante: number
-    id_solicitud: number
     id_tramite: number
     nombre: string,
     apellido_p: string,

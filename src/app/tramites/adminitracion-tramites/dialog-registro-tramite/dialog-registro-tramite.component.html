@@ -1,4 +1,4 @@
-<p>dialog-registro-tramite works!</p>
+
 <h2 mat-dialog-title>{{tituloDialog}} tramite</h2>
 <mat-dialog-content>
     <mat-stepper #stepper>
@@ -11,7 +11,7 @@
                         <mat-select>
                             <mat-option *ngFor="let segmento of Segmentos" [value]="segmento"
                                 (click)="seleccionar_segmento_tramite(segmento)">
-                                {{segmento}}
+                                TRAMITES PARA {{segmento}}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>

@@ -8,6 +8,7 @@ import { TramiteInternoModel_View, Tramite_Model } from '../../models/tramite.mo
 import { RegistroTramitesService } from '../../services/registro-tramites.service';
 import Swal from 'sweetalert2';
 import { MatSelectChange } from '@angular/material/select';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-dialog-registro-interno',
@@ -53,17 +54,19 @@ export class DialogRegistroInternoComponent implements OnInit {
     private registroTramiteService: RegistroTramitesService,
     private loginService: LoginService,
     public dialogRef: MatDialogRef<DialogRegistroInternoComponent>,
+    private toastr: ToastrService
   ) { }
 
   ngOnInit(): void {
     if (this.data) {
       this.tituloDialog = 'Edicion'
+      this.TramiteInternoFormGroup = this._formBuilder.group({
+        cantidad: ['', [Validators.required, Validators.min(0)]],
+        detalle: ['', Validators.required],
+        cite: ['']
+      });
       this.TramiteInternoFormGroup.patchValue(this.data)
-      this.registroTramiteService.getInterno(this.data.id_interno).subscribe((resp: any) => {
-        if (resp.ok) {
-          this.InternoFormGroup.patchValue(resp.interno)
-        }
-      })
+      this.InternoFormGroup.patchValue(this.data)
     }
     else {
       this.tituloDialog = 'Registro'
@@ -86,7 +89,6 @@ export class DialogRegistroInternoComponent implements OnInit {
         this.TramiteInternoFormGroup.controls['id_TipoTramite'].value,
         this.TramiteInternoFormGroup.controls['detalle'].value,
         this.TramiteInternoFormGroup.controls['cantidad'].value,
-        this.loginService.Detalles_Cuenta.id_cuenta,
         `${this.Detalles_tramite.codigo_alterno.toUpperCase()}-${this.loginService.Detalles_Cuenta.sigla}`,
         "",
         this.TramiteInternoFormGroup.controls['cite'].value
@@ -99,10 +101,9 @@ export class DialogRegistroInternoComponent implements OnInit {
       }
       this.registroTramiteService.addTramite(solicitud).subscribe((resp: any) => {
         if (resp.ok) {
-          Swal.fire({
-            title: "Registro correcto",
-            text: resp.message,
-            icon: 'success'
+          this.toastr.success(undefined, 'Tramite registrado', {
+            positionClass: 'toast-bottom-right',
+            timeOut: 5000
           })
           resp.Tramite['titulo'] = this.Detalles_tramite.titulo
           resp.Tramite['externo'] = false
@@ -131,6 +132,10 @@ export class DialogRegistroInternoComponent implements OnInit {
         this.registroTramiteService.putSolicitud(null, null, actualizar_tramite, actualizar_interno).subscribe((tramite: any) => {
           Object.assign(this.data, tramite)
           this.dialogRef.close(this.data);
+          this.toastr.success(undefined, 'Cambios guardados', {
+            positionClass: 'toast-bottom-right',
+            timeOut: 5000
+          })
         })
       }
       else {

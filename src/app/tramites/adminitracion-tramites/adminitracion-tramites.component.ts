@@ -13,6 +13,7 @@ import { fadeInOnEnterAnimation } from 'angular-animations';
 import * as moment from 'moment';
 import { generar_hoja_ruta, generar_ficha_tramite } from 'src/app/generacion-pdfs/generacion-pdf';
 import { PaginationService } from '../services/pagination.service';
+import { MatPaginator } from '@angular/material/paginator';
 @Component({
   selector: 'app-adminitracion-tramites',
   templateUrl: './adminitracion-tramites.component.html',
@@ -25,18 +26,20 @@ import { PaginationService } from '../services/pagination.service';
 
 export class AdminitracionTramitesComponent implements OnInit {
   Tramites: TramiteModel_View[] = []
-  Total: number = 0
+
   dataSource = new MatTableDataSource();
-  displayedColumns = ["enviado", "alterno", "titulo", "solicitante", "estado", "fecha_creacion", "opciones"]
+  displayedColumns = ["enviado", "alterno", "titulo", "solicitante", "dni", "estado", "fecha_creacion", "opciones"]
+  isLoadingResults = true;
   @ViewChild("myInput") private myInput: ElementRef;
-  cargando: boolean = false
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
 
   constructor(
-    private tramiteService: RegistroTramitesService,
+    public tramiteService: RegistroTramitesService,
     public dialog: MatDialog,
     public pagitationService: PaginationService
   ) {
+
 
   }
 
@@ -44,39 +47,43 @@ export class AdminitracionTramitesComponent implements OnInit {
 
 
   ngOnInit(): void {
-    if (this.pagitationService.termino_busqueda != "") {
-      this.buscar_tramite()
-    }
-    else {
-
-      this.obtener_tramites()
-    }
+    this.obtener_tramites()
 
   }
 
 
   obtener_tramites() {
-    this.cargando = true
-    this.tramiteService.getTramites(this.pagitationService.paginator, this.pagitationService.items_page).subscribe(data => {
-      this.cargando = false
-      this.Tramites = data.tramites
-      this.dataSource.data = this.Tramites
-      this.Total = data.total
-    })
+    this.isLoadingResults = true
+    if (this.tramiteService.termino_busqueda_externo !== "") {
+      // this.tramiteService.buscar_tramite_interno().subscribe(tramites => {
+      //   this.Tramites = tramites
+      //   this.dataSource.data = this.Tramites
+      //   this.isLoadingResults = false
+      // })
+    }
+    else {
+      this.tramiteService.getTramites().subscribe(data => {
+        this.Tramites = data
+        this.dataSource.data = this.Tramites
+        this.paginator.pageIndex = this.tramiteService.pageIndex_externo
+        this.isLoadingResults = false
+      })
+    }
+
 
   }
 
 
   registrar_Tramite() {
     const dialogRef = this.dialog.open(DialogRegistroTramiteComponent, {
-      data: {},
-      width: '900px'
+      width: '900px',
+      disableClose: true
     });
     dialogRef.afterClosed().subscribe((dataDialog: TramiteModel_View) => {
       if (dataDialog) {
         this.Tramites.unshift(dataDialog)
-        this.Total = this.Total + 1
-        if (this.Total > this.pagitationService.items_page) {
+        this.tramiteService.dataSize = this.tramiteService.dataSize + 1
+        if (this.Tramites.length > this.tramiteService.rows_externo) {
           this.Tramites.pop()
         }
         this.dataSource.data = this.Tramites
@@ -102,24 +109,6 @@ export class AdminitracionTramitesComponent implements OnInit {
     generar_ficha_tramite(tramite)
   }
 
-  generar_hoja_ruta(tramite: TramiteModel_View) {
-    this.tramiteService.obtener_hoja_ruta(tramite.id_tramite, 'externo').subscribe(data => {
-      generar_hoja_ruta(data.tramite, data.fecha_generacion)
-    })
-  }
-
-
-
-
-
-  agrupar_tramites(estado: string) {
-    if (estado == 'Todos') {
-      this.dataSource.data = this.Tramites
-    }
-    else {
-      this.dataSource.data = this.Tramites.filter((elemet: any) => elemet.estado == estado)
-    }
-  }
 
   abrir_DialogRemision(tramite: any) {
 
@@ -143,36 +132,41 @@ export class AdminitracionTramitesComponent implements OnInit {
     });
   }
 
-  cambiar_paginacion(evento: any) {
-    this.pagitationService.items_page = evento.pageSize
-    this.pagitationService.pageIndex = evento.pageIndex
-    if (evento.pageIndex > evento.previousPageIndex) {
-      this.pagitationService.next_page()
-    }
-    else if (evento.pageIndex < evento.previousPageIndex) {
-      this.pagitationService.previus_page()
-    }
 
-    this.obtener_tramites()
-
-  }
 
   buscar_tramite() {
-    this.tramiteService.buscar_tramite(this.pagitationService.termino_busqueda).subscribe(tramites => {
-      this.Tramites = tramites
-      this.dataSource.data = this.Tramites
+    if (this.tramiteService.termino_busqueda_externo !== '') {
+      this.tramiteService.pageIndex_externo = 0
+      this.tramiteService.buscar_tramite(this.tramiteService.termino_busqueda_externo).subscribe(tramites => {
+        this.Tramites = tramites
+        this.dataSource.data = this.Tramites
+        this.paginator.pageIndex = 0
+      })
+    }
+  }
+  generar_hoja_ruta(tramite: TramiteModel_View) {
+    this.tramiteService.obtener_hoja_ruta(tramite.id_tramite, 'externo').subscribe(data => {
+      generar_hoja_ruta(data.tramite, data.fecha_generacion)
     })
   }
+
+
+  cambiar_paginacion(evento: any) {
+    this.tramiteService.pageIndex_externo = evento.pageIndex
+    this.tramiteService.rows_externo = evento.pageSize
+    this.obtener_tramites()
+  }
   activar_busqueda() {
-    this.pagitationService.modo_busqueda = true
+    this.tramiteService.modo_busqueda_externo = true
     setTimeout(() => {
       this.myInput.nativeElement.focus()
     })
   }
 
   desactivar_busqueda() {
-    this.pagitationService.termino_busqueda = ""
-    this.pagitationService.modo_busqueda = false
+    this.tramiteService.termino_busqueda_externo = ""
+    this.tramiteService.modo_busqueda_externo = false
+    this.tramiteService.pageIndex_externo = 0
     this.obtener_tramites()
   }
 

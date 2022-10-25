@@ -16,7 +16,7 @@ import autoTable from 'jspdf-autotable';
 export class ReporteEstadoComponent implements OnInit {
   reporte_listado: any[] = []
   estado: string = ""
-  estados_tramite = ['Inscrito', 'Observado', 'Concluido', 'Anulado', 'En revision']
+  estados_tramite = ['Inscrito', 'Observado', 'Concluido', 'En revision']
   document: any
   pdfSrc: string
   range: any = new FormGroup({

@@ -11,6 +11,17 @@ const base_url = environment.base_url
   providedIn: 'root'
 })
 export class BandejaService {
+  pageIndex_mailOut: number = 0
+  rows_mailOut: number = 10
+  modo_busqueda_mailOut: boolean = false
+  termino_busqueda_mailOut: string = ""
+
+  pageIndex_mailIn: number = 0
+  rows_mailIn: number = 10
+  modo_busqueda_mailIn: boolean = false
+  termino_busqueda_mailIn: string = ""
+
+  dataSize: number
 
   constructor(private http: HttpClient) { }
   obtener_usuarios_envio(id_dependencia: number) {
@@ -25,20 +36,37 @@ export class BandejaService {
       return resp.fecha_envio
     }))
   }
-  getBandejaSalida(desde: number = 0, filas: number = 10) {
-    return this.http.get<{ ok: boolean, bandeja: BandejaSalidaModel_View[], total: number }>(`${base_url}/mail/salida?desde=${desde}&filas=${filas}`).pipe(
+  getBandejaSalida() {
+    return this.http.get<{ ok: boolean, bandeja: BandejaSalidaModel_View[], total: number }>(`${base_url}/mail/salida?pageIndex=${this.pageIndex_mailOut}&rows=${this.rows_mailOut}`).pipe(
       map(data => {
-        return { bandeja: data.bandeja, total: data.total }
+        this.dataSize = data.total
+        return data.bandeja
       })
     )
   }
-  getBandejaEntrada(desde: number = 0, filas: number = 10) {
-    return this.http.get<{ ok: boolean, bandeja: BandejaEntradaModel_View[], total: number }>(`${base_url}/mail/entrada?desde=${desde}&filas=${filas}`).pipe(
+  searchBandejaSalida() {
+    return this.http.get<{ ok: boolean, bandeja: BandejaSalidaModel_View[], total: number }>(`${base_url}/mail/salida/${this.termino_busqueda_mailOut}?pageIndex=${this.pageIndex_mailOut}&rows=${this.rows_mailOut}`).pipe(
       map(data => {
-        return { bandeja: data.bandeja, total: data.total }
+        this.dataSize = data.total
+        return data.bandeja
       })
     )
-
+  }
+  getBandejaEntrada() {
+    return this.http.get<{ ok: boolean, bandeja: BandejaEntradaModel_View[], total: number }>(`${base_url}/mail/entrada?pageIndex=${this.pageIndex_mailIn}&rows=${this.rows_mailIn}`).pipe(
+      map(data => {
+        this.dataSize = data.total
+        return data.bandeja
+      })
+    )
+  }
+  searchBandejaEntrada() {
+    return this.http.get<{ ok: boolean, bandeja: BandejaEntradaModel_View[], total: number }>(`${base_url}/mail/entrada/${this.termino_busqueda_mailIn}?pageIndex=${this.pageIndex_mailIn}&rows=${this.rows_mailIn}`).pipe(
+      map(data => {
+        this.dataSize = data.total
+        return data.bandeja
+      })
+    )
   }
   aceptar_Tramite(id_tramite: number, id_cuentaEmisor: number) {
     return this.http.post<{ ok: boolean, message: string }>(`${base_url}/mail/aceptar`, { id_tramite, id_cuentaEmisor }).pipe(

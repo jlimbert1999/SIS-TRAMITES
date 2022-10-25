@@ -1,10 +1,7 @@
 <p>
     <mat-toolbar class="example-toolbar">
         <ng-container *ngIf="!tramiteService.modo_busqueda">
-            <span>Tramites internos /
-                <small style="font-size: 15px;">
-                    total: {{tramiteService.dataSize}}
-                </small>
+            <span style="font-size: 16px;">TRAMITES INTERNOS
             </span>
             <span class="example-spacer"></span>
             <button (click)="activar_busqueda()" mat-icon-button matTooltip="Buscar tramite"
@@ -17,8 +14,8 @@
             </button>
         </ng-container>
 
-        <mat-form-field *ngIf="tramiteService.modo_busqueda" appearance="standard">
-            <mat-label>Ingrese el alterno del tramite</mat-label>
+        <mat-form-field *ngIf="tramiteService.modo_busqueda" floatLabel="never">
+            <mat-label>Ingrese el alterno, cite o destinatario</mat-label>
             <input [(ngModel)]="tramiteService.termino_busqueda" matInput type="search" #myInput
                 (keyup.enter)="buscar_tramite()">
             <button matSuffix mat-icon-button aria-label="Clear" (click)="desactivar_busqueda()">
@@ -119,144 +116,104 @@
 
 </div> -->
 
-<div class="example-container mat-elevation-z8">
-    <div class="example-loading-shade" *ngIf="isLoadingResults">
-        <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
-
+<div class="container-fluid">
+    <div *ngIf="!isLoadingResults && dataSource.data.length==0" class="alert alert-primary" role="alert">
+        Usted no ha registrado ningun tramte interno
     </div>
+    <div class="example-container mat-elevation-z8" [@fadeInOnEnter]>
+        <div class="example-loading-shade" *ngIf="isLoadingResults">
+            <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
+        </div>
 
-    <div class="example-table-container">
+        <div *ngIf="dataSource.data.length>0" class="example-table-container">
 
-        <table mat-table [dataSource]="dataSource" [class.isMobile]="'isMobile'" class="example-table" matSort
-            matSortActive="created" matSortDisableClear matSortDirection="desc">
-            <ng-container matColumnDef="enviado">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> Enviado</th>
-                <td mat-cell *matCellDef="let element" class='m-card-sub-title' data-label='Form type'>
-                    {{element.enviado}} </td>
-            </ng-container>
-            <ng-container matColumnDef="alterno">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> Alterno </th>
-                <td mat-cell *matCellDef="let element" class='m-card-title' test data-label='Riskplan'>
-                    <a [routerLink]="['ficha',element.id_tramite ]">
-                        {{element.alterno}}
-                    </a></td>
-            </ng-container>
-            <ng-container matColumnDef="titulo">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>Titulo</th>
-                <td mat-cell *matCellDef="let element" class='has_label_on_mobile' data-label='Last modified on'>
-                    {{element.titulo}} </td>
-            </ng-container>
-            <ng-container matColumnDef="remitente">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> Remitente</th>
-                <td mat-cell *matCellDef="let element" class='has_label_on_mobile' data-label='Last modified on'>
-                    {{element.remitente}} </td>
-            </ng-container>
-            <ng-container matColumnDef="destinatario">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> Destinatario </th>
-                <td mat-cell *matCellDef="let element" class='has_label_on_mobile' data-label='Last modified on'>
-                    {{element.destinatario}} </td>
-            </ng-container>
-            <ng-container matColumnDef="estado">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> Estado </th>
-                <td mat-cell *matCellDef="let element" class='has_label_on_mobile' data-label='Last modified on'>
-                    {{element.estado}} </td>
-            </ng-container>
-            <ng-container matColumnDef="fecha_creacion">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha</th>
-                <td mat-cell *matCellDef="let element" class='has_label_on_mobile' data-label='Last modified on'>
-                    {{element.fecha_creacion|date}} </td>
-            </ng-container>
-            <ng-container matColumnDef="cite">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> Cite </th>
-                <td mat-cell *matCellDef="let element" class='has_label_on_mobile' data-label='Last modified on'>
-                    {{element.cite}} </td>
-            </ng-container>
-            <ng-container matColumnDef="opciones">
-                <th mat-header-cell *matHeaderCellDef> </th>
-                <td mat-cell *matCellDef="let element">
-                    <button mat-icon-button [matMenuTriggerFor]="menu">
-                        <mat-icon>more_vert</mat-icon>
-                    </button>
-                    <mat-menu #menu="matMenu">
-                        <button (click)="editar_tramite(element)" mat-menu-item>
-                            <mat-icon>open_in_new</mat-icon>
-                            <span>Open risk plan</span>
+            <table mat-table [dataSource]="dataSource" [class.isMobile]="'isMobile'" class="example-table" matSort
+                matSortActive="created" matSortDisableClear matSortDirection="desc">
+                <ng-container matColumnDef="enviado">
+                    <th mat-header-cell *matHeaderCellDef>Enviado</th>
+                    <td mat-cell *matCellDef="let element">
+                        <mat-icon matTooltip="Enviado" style="color: green;" *ngIf="element.enviado">mark_email_read
+                        </mat-icon>
+                        <mat-icon matTooltip="Sin enviar" style="color: orange;" *ngIf="!element.enviado">
+                            mark_email_unread
+                        </mat-icon>
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="alterno">
+                    <th mat-header-cell *matHeaderCellDef> Alterno </th>
+                    <td mat-cell *matCellDef="let element" class='m-card-sub-title'>
+                        <a [routerLink]="['ficha',element.id_tramite ]">
+                            {{element.alterno}}
+                        </a>
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="titulo">
+                    <th mat-header-cell *matHeaderCellDef>Tramite</th>
+                    <td mat-cell *matCellDef="let element" class='m-card-title'>
+                        {{element.titulo}} </td>
+                </ng-container>
+                <ng-container matColumnDef="remitente">
+                    <th mat-header-cell *matHeaderCellDef> Remitente</th>
+                    <td mat-cell *matCellDef="let element" class='has_label_on_mobile' data-label='Remitente'>
+                        {{element.remitente}} </td>
+                </ng-container>
+                <ng-container matColumnDef="destinatario">
+                    <th mat-header-cell *matHeaderCellDef> Destinatario </th>
+                    <td mat-cell *matCellDef="let element" class='has_label_on_mobile' data-label='Destinatario'>
+                        {{element.destinatario}} </td>
+                </ng-container>
+                <ng-container matColumnDef="estado">
+                    <th mat-header-cell *matHeaderCellDef> Estado </th>
+                    <td mat-cell *matCellDef="let element" class='has_label_on_mobile' data-label='Estado'>
+                        <span style="font-size: 11px;" class="badge" [ngClass]="[
+                    element.estado=='Inscrito'?'text-bg-primary':'',
+                    element.estado=='En revision'?'text-bg-secondary':'',
+                    element.estado=='Observado'?'text-bg-warning':'',
+                    element.estado=='Concluido'?'text-bg-dark':'',
+                    ]">
+                            {{element.estado|uppercase}}
+                        </span>
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="fecha_creacion">
+                    <th mat-header-cell *matHeaderCellDef>Fecha</th>
+                    <td mat-cell *matCellDef="let element" class='has_label_on_mobile' data-label='Fecha'>
+                        {{element.fecha_creacion|date}} </td>
+                </ng-container>
+                <ng-container matColumnDef="cite">
+                    <th mat-header-cell *matHeaderCellDef> Cite </th>
+                    <td mat-cell *matCellDef="let element" class='has_label_on_mobile' data-label='Cite:'>
+                        {{element.cite}} </td>
+                </ng-container>
+                <ng-container matColumnDef="opciones">
+                    <th mat-header-cell *matHeaderCellDef> </th>
+                    <td mat-cell *matCellDef="let element">
+                        <button mat-icon-button [matMenuTriggerFor]="menu">
+                            <mat-icon>more_vert</mat-icon>
                         </button>
-                        <button mat-menu-item>
-                            <mat-icon>undo</mat-icon>
-                            <span>Reset questionnairre</span>
-                        </button>
-                        <button mat-menu-item disabled>
-                            <mat-icon>delete</mat-icon>
-                            <span>Delete questionnairre</span>
-                        </button>
-                    </mat-menu>
-                </td>
-            </ng-container>
-           
+                        <mat-menu #menu="matMenu">
+                            <button (click)="editar_tramite(element)" [disabled]="element.enviado==1" mat-menu-item>
+                                <mat-icon>edit</mat-icon>
+                                <span>Editar tramite</span>
+                            </button>
+                            <button (click)="abrir_DialogRemision(element)" [disabled]="element.enviado==1"
+                                mat-menu-item>
+                                <mat-icon>send</mat-icon>
+                                <span>Enviar tramite</span>
+                            </button>
+                            <button (click)="generar_hoja_ruta(element)" mat-menu-item>
+                                <mat-icon>summarize</mat-icon>
+                                <span>Hoja de ruta</span>
+                            </button>
+                        </mat-menu>
+                    </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+        </div>
 
-            <!-- <ng-container matColumnDef="alterno">
-                <th mat-header-cell *matHeaderCellDef>#</th>
-                <td mat-cell *matCellDef="let row">
-                    <a [routerLink]="['ficha',row.id_tramite ]">
-                        {{row.alterno}}
-                    </a>
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="enviado">
-                <th mat-header-cell *matHeaderCellDef>Title</th>
-                <td mat-cell *matCellDef="let row">
-                    {{row.enviado?'SI':"NO"}}
-                </td>
-            </ng-container>
-
-
-      
-            <ng-container matColumnDef="titulo">
-                <th mat-header-cell *matHeaderCellDef>Title</th>
-                <td mat-cell *matCellDef="let row">
-                    {{row.titulo}}
-                </td>
-            </ng-container>
-            <ng-container matColumnDef="remitente">
-                <th mat-header-cell *matHeaderCellDef>Title</th>
-                <td mat-cell *matCellDef="let row">
-                    {{row.remitente|titlecase}}
-                </td>
-            </ng-container>
-
-
-            <ng-container matColumnDef="opciones">
-                <th mat-header-cell *matHeaderCellDef> Registro</th>
-                <td mat-cell *matCellDef="let element">
-                    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
-                        <mat-icon>more_vert</mat-icon>
-                    </button>
-                    <mat-menu #menu="matMenu">
-                        <button (click)="editar_tramite(element)" *ngIf="!element.enviado" mat-menu-item>
-                            <mat-icon>edit</mat-icon>
-                            <span>Editar tramite</span>
-                        </button>
-                        <button (click)="abrir_DialogRemision(element)" *ngIf="!element.enviado" mat-menu-item>
-                            <mat-icon>send</mat-icon>
-                            <span>Enviar tramite</span>
-                        </button>
-                        <button (click)="generar_hoja_ruta(element)" mat-menu-item>
-                            <mat-icon>summarize</mat-icon>
-                            <span>Hoja de ruta</span>
-                        </button>
-                    </mat-menu>
-
-                </td>
-            </ng-container> -->
-
-
-            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </table>
+        <mat-paginator (page)="cambiar_paginacion($event)" [length]="tramiteService.dataSize"
+            [pageSizeOptions]="[10, 25, 50, 100]" showFirstLastButtons></mat-paginator>
     </div>
-
-    <mat-paginator (page)="cambiar_paginacion($event)" [length]="tramiteService.dataSize" [pageSizeOptions]="[5, 10, 25, 100]"
-        aria-label="Select page of GitHub search results"></mat-paginator>
 </div>
-

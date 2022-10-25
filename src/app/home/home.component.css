@@ -76,11 +76,12 @@ h1.example-app-name {
 }
 
 .mat-drawer {
-    width: 250px;
+    width: 220px;
     background: #1C1C21;
     color: white;
-    
+
 }
+
 .mat-list-item,
 .mat-subheader {
     color: white;
@@ -89,8 +90,9 @@ h1.example-app-name {
 
 .example-spacer {
     flex: 1 1 auto;
-  
+
 }
+
 .example-toolbar {
     background-color: #1C1C21;
     color: white;
@@ -108,4 +110,9 @@ h1.example-app-name {
 .mat-list-item.active {
     background-color: #09A6F3;
 }
-
+/* 
+.main-content {
+    background-image: url('../../assets/img/logo_alcaldia.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+} */

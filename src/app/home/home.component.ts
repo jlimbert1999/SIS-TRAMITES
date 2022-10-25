@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { SocketService } from '../auth/services/socket.service';
 import { ToastrService } from 'ngx-toastr';
 import { fadeInOnEnterAnimation } from 'angular-animations';
-
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',

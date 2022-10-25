@@ -9,17 +9,18 @@ const base_url = environment.base_url
   providedIn: 'root'
 })
 export class RegistroTramitesService {
-  pageIndex_interno:number=0
-  rows_interno:number=5
-  pageIndex_externo:number=0
-  rows_externo:number=5
-
-  items_page: number = 10
-  paginator: number = 0
-  termino_busqueda: string = ""
+  pageIndex_interno: number = 0
+  rows_interno: number = 10
   modo_busqueda: boolean = false
-  dataSize:number
-  public pageIndex: number
+  termino_busqueda: string = ""
+
+  pageIndex_externo: number = 0
+  rows_externo: number = 10
+  modo_busqueda_externo: boolean = false
+  termino_busqueda_externo: string = ""
+
+  dataSize: number
+
 
 
   constructor(private http: HttpClient) { }
@@ -33,8 +34,8 @@ export class RegistroTramitesService {
       }
     }))
   }
-  getTramites(desde: number = 0, filas: number = 10) {  //tramites registrados por esta cuenta
-    return this.http.get<{ ok: boolean, tramites: TramiteModel_View[], total: number }>(`${base_url}/tramites?desde=${desde}&filas=${filas}`).pipe(map(resp => {
+  getTramites() {  //tramites registrados por esta cuenta
+    return this.http.get<{ ok: boolean, tramites: TramiteModel_View[], total: number }>(`${base_url}/tramites?pageIndex=${this.pageIndex_externo}&rows=${this.rows_externo}`).pipe(map(resp => {
       resp.tramites.map(tramite => {
         if (tramite.tipo_solicitante == 'NATURAL') {
 
@@ -44,7 +45,8 @@ export class RegistroTramitesService {
           tramite['solicitante'] = `${tramite.nombre}`;
         }
       })
-      return { tramites: resp.tramites, total: resp.total }
+      this.dataSize = resp.total
+      return resp.tramites
     }))
   }
   getSolictidud(id_solicitante: any, id_representante: any, id_interno: any) { //otbener detalles del solcitnate
@@ -103,8 +105,8 @@ export class RegistroTramitesService {
 
   // MANEJO DE TRAMITES INTERENOS
   getTramites_internos() {
-    return this.http.get<{ ok: boolean, Tramites: TramiteInternoModel_View[], total: number }>(`${base_url}/tramites/internos?pageIndex=${this.pageIndex_interno}&rows=${this.rows_interno}`).pipe(map(resp=>{
-      this.dataSize=resp.total
+    return this.http.get<{ ok: boolean, Tramites: TramiteInternoModel_View[], total: number }>(`${base_url}/tramites/internos?pageIndex=${this.pageIndex_interno}&rows=${this.rows_interno}`).pipe(map(resp => {
+      this.dataSize = resp.total
       return resp.Tramites
     }))
   }
@@ -113,7 +115,7 @@ export class RegistroTramitesService {
   }
 
   buscar_tramite(termino: string) {
-    return this.http.get<{ ok: boolean, tramites: TramiteModel_View[] }>(`${base_url}/tramite/busqueda/${termino}`)
+    return this.http.get<{ ok: boolean, tramites: TramiteModel_View[], total: number }>(`${base_url}/tramite/busqueda/${termino}?pageIndex=${this.pageIndex_externo}&rows=${this.rows_externo}`)
       .pipe(map(resp => {
         resp.tramites.map(tramite => {
           if (tramite.tipo_solicitante == 'NATURAL') {
@@ -124,13 +126,13 @@ export class RegistroTramitesService {
             tramite['solicitante'] = `${tramite.nombre}`;
           }
         })
+        this.dataSize = resp.total
         return resp.tramites
       }))
   }
-  buscar_tramite_interno(termino: string) {
-    return this.http.get<{ ok: boolean, tramites: TramiteInternoModel_View[], total:number }>(`${base_url}/tramites/internos/busqueda/${termino}`).pipe(map(resp => {
-      console.log(resp);
-      this.dataSize=resp.total
+  buscar_tramite_interno() {
+    return this.http.get<{ ok: boolean, tramites: TramiteInternoModel_View[], total: number }>(`${base_url}/tramites/internos/busqueda/${this.termino_busqueda}?pageIndex=${this.pageIndex_interno}&rows=${this.rows_interno}`).pipe(map(resp => {
+      this.dataSize = resp.total
       return resp.tramites
     }))
 
@@ -150,12 +152,6 @@ export class RegistroTramitesService {
 
   }
 
-  next_page() {
-    this.paginator = this.paginator + this.items_page
-  }
 
-  previus_page() {
-    this.paginator = this.paginator - this.items_page
-  }
 
 }
